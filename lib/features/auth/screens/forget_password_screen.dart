@@ -83,7 +83,7 @@ class ForgotPasswordScreen extends StatelessWidget {
                 decoration: InputDecoration(
                   hintText: 'Enter your email',
                   hintStyle: AppTextTheme.bodyTextStyle.copyWith(color: AppColor.lightTextTertiaryColor),
-                  fillColor: AppColor.darkSurfaceColor,
+                  fillColor: AppColor.lightSurfaceColor,
                   filled: true,
                   contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
                   border: OutlineInputBorder(

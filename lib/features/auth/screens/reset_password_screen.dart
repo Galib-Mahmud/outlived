@@ -13,7 +13,6 @@ class ResetPasswordScreen extends StatelessWidget {
     final controller = Get.put(ResetPasswordController());
 
     return Scaffold(
-      backgroundColor: AppColor.darkBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -169,7 +168,7 @@ class ResetPasswordScreen extends StatelessWidget {
     return InputDecoration(
       hintText: hint,
       hintStyle: AppTextTheme.bodyTextStyle.copyWith(color: AppColor.lightTextTertiaryColor),
-      fillColor: AppColor.darkSurfaceColor,
+      fillColor: AppColor.lightSurfaceColor,
       filled: true,
       contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
       border: OutlineInputBorder(

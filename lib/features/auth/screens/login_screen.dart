@@ -16,7 +16,6 @@ class LoginScreen extends StatelessWidget {
     final controller = Get.put(LoginController());
 
     return Scaffold(
-      backgroundColor: AppColor.darkBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(horizontal: 24.w),
@@ -50,7 +49,7 @@ class LoginScreen extends StatelessWidget {
                 width: double.infinity,
                 padding: EdgeInsets.all(2.r),
                 decoration: BoxDecoration(
-                  color: AppColor.darkSurfaceColor,
+                  color: AppColor.lightSurfaceColor,
                   borderRadius: BorderRadius.circular(8.r),
                 ),
                 child: Obx(
@@ -79,7 +78,7 @@ class LoginScreen extends StatelessWidget {
                                 'Login',
                                 style: AppTextTheme.bodyTextStyle.copyWith(
                                   color: controller.selectedTab.value == 0
-                                      ? AppColor.lightTextColor
+                                      ? Colors.white
                                       : AppColor.lightTextSecondaryColor,
                                   fontWeight: controller.selectedTab.value == 0
                                       ? FontWeight.w700
@@ -114,7 +113,7 @@ class LoginScreen extends StatelessWidget {
                                 'Sign Up',
                                 style: AppTextTheme.bodyTextStyle.copyWith(
                                   color: controller.selectedTab.value == 1
-                                      ? AppColor.lightTextColor
+                                      ? Colors.white
                                       : AppColor.lightTextSecondaryColor,
                                   fontWeight: controller.selectedTab.value == 1
                                       ? FontWeight.w700
@@ -384,7 +383,7 @@ class LoginScreen extends StatelessWidget {
       hintStyle: AppTextTheme.bodyTextStyle.copyWith(
         color: AppColor.lightTextTertiaryColor,
       ),
-      fillColor: AppColor.darkSurfaceColor,
+      fillColor: AppColor.lightSurfaceColor,
       filled: true,
       contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
       border: OutlineInputBorder(

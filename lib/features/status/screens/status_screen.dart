@@ -13,7 +13,6 @@ class StatusScreen extends StatelessWidget {
     final controller = Get.put(StatusController());
 
     return Scaffold(
-      backgroundColor: AppColor.darkBackgroundColor,
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 24.w),

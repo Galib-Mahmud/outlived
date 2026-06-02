@@ -15,7 +15,6 @@ class OtpScreen extends StatelessWidget {
     final controller = Get.put(OtpController());
 
     return Scaffold(
-      backgroundColor: AppColor.darkBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -104,7 +103,7 @@ class OtpScreen extends StatelessWidget {
                         color: AppColor.lightTextTertiaryColor,
                         fontSize: 18.sp,
                       ),
-                      fillColor: AppColor.darkSurfaceColor,
+                      fillColor: AppColor.lightSurfaceColor,
                       filled: true,
                       contentPadding: EdgeInsets.zero,
                       border: OutlineInputBorder(

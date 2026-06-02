@@ -13,7 +13,6 @@ class UpgradeScreen extends StatelessWidget {
     final controller = Get.put(UpgradeController());
 
     return Scaffold(
-      backgroundColor: AppColor.darkBackgroundColor,
       body: SafeArea(
         child: Column(
           children: [
@@ -121,7 +120,7 @@ class UpgradeScreen extends StatelessWidget {
             width: double.infinity,
             padding: EdgeInsets.all(16.r),
             decoration: BoxDecoration(
-              color: AppColor.darkSurfaceColor,
+              color: AppColor.lightSurfaceColor,
               borderRadius: BorderRadius.circular(14.r),
               border: Border.all(
                 color: isSelected ? AppColor.primaryColor : AppColor.primaryColor.withOpacity(0.1),

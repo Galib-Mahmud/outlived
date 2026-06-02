@@ -13,7 +13,6 @@ class CreateAccountScreen extends StatelessWidget {
     final controller = Get.put(CreateAccountController());
 
     return Scaffold(
-      backgroundColor: AppColor.darkBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -57,7 +56,7 @@ class CreateAccountScreen extends StatelessWidget {
                 width: double.infinity,
                 padding: EdgeInsets.all(2.r),
                 decoration: BoxDecoration(
-                  color: AppColor.darkSurfaceColor,
+                  color: AppColor.lightSurfaceColor,
                   borderRadius: BorderRadius.circular(8.r),
                 ),
                 child: Obx(() => Row(
@@ -159,7 +158,7 @@ class CreateAccountScreen extends StatelessWidget {
           width: double.infinity,
           padding: EdgeInsets.all(16.r),
           decoration: BoxDecoration(
-            color: AppColor.darkSurfaceColor,
+            color: AppColor.lightSurfaceColor,
             borderRadius: BorderRadius.circular(12.r),
           ),
           child: Column(

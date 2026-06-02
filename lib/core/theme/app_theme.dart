@@ -23,10 +23,10 @@ class AppTheme {
 
   final darkTheme = ThemeData(
     brightness: Brightness.dark,
-    scaffoldBackgroundColor: AppColor.darkBackgroundColor,
+    scaffoldBackgroundColor: AppColor.lightBackgroundColor,
     fontFamily: FontFamily.inter.name,
     appBarTheme: AppBarTheme(
-      color: AppColor.darkBackgroundColor,
+      color: AppColor.lightBackgroundColor,
       elevation: 0,
       iconTheme: IconThemeData(color: Colors.white),
       titleTextStyle: TextStyle(

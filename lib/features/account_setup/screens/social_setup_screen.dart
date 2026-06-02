@@ -13,7 +13,6 @@ class SocialSetupScreen extends StatelessWidget {
     final controller = Get.put(SocialSetupController());
 
     return Scaffold(
-      backgroundColor: AppColor.darkBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -108,7 +107,7 @@ class SocialSetupScreen extends StatelessWidget {
                                         color: AppColor.lightTextTertiaryColor.withOpacity(0.4),
                                         fontSize: 14.sp,
                                       ),
-                                      fillColor: AppColor.darkSurfaceColor,
+                                      fillColor: AppColor.lightSurfaceColor,
                                       filled: true,
                                       contentPadding: EdgeInsets.symmetric(horizontal: 14.w),
                                       border: OutlineInputBorder(
@@ -185,7 +184,7 @@ class SocialSetupScreen extends StatelessWidget {
       width: 56.w,
       height: 48.h,
       decoration: BoxDecoration(
-        color: AppColor.darkSurfaceColor,
+        color: AppColor.lightSurfaceColor,
         borderRadius: BorderRadius.circular(8.r),
       ),
       child: Center(
