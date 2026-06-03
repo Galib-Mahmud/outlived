@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:outlive/core/theme/app_theme.dart';
+import 'package:outlive/features/landing/screens/landing_screen.dart';
 import 'features/onboarding/screens/welcome_screen.dart';
 
 void main() {
@@ -21,7 +22,7 @@ class MyApp extends StatelessWidget {
         return GetMaterialApp(
           title: 'OutLive',
           theme: AppTheme().darkTheme,
-          home: WelcomeScreen()
+          home: LandingScreen()
         );
       },
     );

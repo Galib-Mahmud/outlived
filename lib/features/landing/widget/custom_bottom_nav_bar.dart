@@ -129,6 +129,8 @@ class CustomBottomNavStack extends StatelessWidget {
       }) {
     final isSelected = controller.selectedIndex.value == index;
 
+    print('Rendering tab index: $index, isSelected: $isSelected'); // Debug log to verify state changes
+
     return GestureDetector(
       onTap: () => controller.changeTab(index),
       behavior: HitTestBehavior.opaque,
