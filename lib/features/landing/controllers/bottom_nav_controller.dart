@@ -5,6 +5,8 @@ import 'package:outlive/features/home/screens/home_screen.dart';
 import 'package:outlive/features/legacy/screens/legacy_screen.dart';
 import 'package:outlive/features/profile/screens/profile_screen.dart';
 
+import '../../legacy/screens/create_reminder_screen.dart';
+
 class BottomNavController extends GetxController {
   // Track active tab index (0: Home, 1: Legacy, 2: Contacts, 3: Profile)
   var selectedIndex = 0.obs;
@@ -23,6 +25,6 @@ class BottomNavController extends GetxController {
 
   void onFabPressed() {
     // Handle center '+' button action
-    Get.toNamed('/create-content');
+    Get.to(CreateReminderScreen());
   }
 }

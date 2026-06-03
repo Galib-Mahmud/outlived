@@ -47,15 +47,6 @@ class LegacyController extends GetxController {
       isUpcoming: true,
       content: '"Assalamu Alaikum dear friends 🤍\n\nMay Allah bless you with peace, guidance, and success in this life and the next. Remember Allah in your good times and difficult times, keep your prayers strong, and never lose hope in His mercy.\n\n“Indeed, with hardship comes ease.” — Surah Ash-Sharh 94:6\n\nMay Allah keep us all steadfast on the right path. Ameen 🤲🏼"',
     ),
-    LegacyMessageModel(
-      id: '3',
-      groupHeader: 'Past Messages',
-      timeText: 'May 28, 6:00 AM',
-      recipients: 'Ahmad and 12 People',
-      scheduleType: 'Once',
-      isUpcoming: false,
-      content: '"Assalamu Alaikum, this is a completed previous legacy reflection text for your records layout verification."',
-    ),
   ].obs;
 
   // Delete message handler pipeline action

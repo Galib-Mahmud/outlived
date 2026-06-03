@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:outlive/core/theme/text_theme.dart';
 import 'package:outlive/core/universal_widgets/round_action_btn.dart';
+import 'package:outlive/features/legacy/screens/social_post_screen.dart';
 import '../../../core/theme/app_color.dart';
 import '../controllers/legacy_controller.dart';
 
@@ -81,25 +82,30 @@ class LegacyScreen extends StatelessWidget {
                 final list = controller.filteredMessages;
 
                 if (list.isEmpty) {
-                  return Center(
-                    child: Column(
-                      children: [
-                        Text(
-                          'Your first ongoing deed starts here',
-                          style: AppTextTheme.bodyTextStyle.copyWith(
-                            color: AppColor.lightTextColor ,
-                            fontSize: 20.sp,
+                  return Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 80.h),
+                    child: Center(
+                      child: Column(
+                        children: [
+                          Text(
+                            'Your first ongoing deed \nstarts here',
+                            style: AppTextTheme.bodyTextStyle.copyWith(
+                              color: AppColor.lightTextColor ,
+                              fontSize: 20.sp,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            textAlign: TextAlign.center,
                           ),
-                        ),
-                        SizedBox(height: 8.h),
-                        RoundActionBtn(
-                          onPressed: () {
-                            // Placeholder for action to create a new legacy message
-                          },
-                          text: 'Start Now',
-                        )
-                      ],
-                    )
+                          SizedBox(height: 18.h),
+                          RoundActionBtn(
+                            onPressed: () {
+                              Get.to(SocialPostScreen());
+                            },
+                            text: 'Start Now',
+                          )
+                        ],
+                      )
+                    ),
                   );
                 }
 
