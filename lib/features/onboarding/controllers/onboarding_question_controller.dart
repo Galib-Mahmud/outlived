@@ -1,4 +1,6 @@
 import 'package:get/get.dart';
+import 'package:outlive/features/auth/controllers/login_controller.dart';
+import 'package:outlive/features/auth/screens/login_screen.dart';
 
 class OnboardingQuestionController extends GetxController {
 
@@ -14,8 +16,9 @@ class OnboardingQuestionController extends GetxController {
     if (currentQuestionIndex.value < questions.length - 1) {
       currentQuestionIndex.value++;
     } else {
-      // Handle completion of onboarding questions, e.g., navigate to next screen
-      Get.toNamed('/welcome'); // Update with your actual target route
+      final LoginController loginController = Get.put(LoginController());
+      loginController.selectedTab.value = 1;
+      Get.to(LoginScreen());
     }
   }
 

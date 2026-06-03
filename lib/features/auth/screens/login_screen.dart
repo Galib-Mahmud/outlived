@@ -3,16 +3,20 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:outlive/core/theme/app_theme.dart';
 import 'package:outlive/core/theme/text_theme.dart';
+import 'package:outlive/features/account_setup/screens/social_setup_screen.dart';
+import 'package:outlive/features/home/screens/home_screen.dart';
 import '../../../core/theme/app_color.dart';
 import '../../../core/universal_widgets/action_button.dart';
+import '../../account_setup/screens/create_account_screen.dart';
 import '../controllers/login_controller.dart';
+import '../widgets/tab_btn.dart';
+import 'forget_password_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Injecting the GetX Controller
     final controller = Get.put(LoginController());
 
     return Scaffold(
@@ -47,91 +51,30 @@ class LoginScreen extends StatelessWidget {
               // Custom Tab Switcher (Login / Sign Up)
               Container(
                 width: double.infinity,
-                padding: EdgeInsets.all(2.r),
+                  padding: EdgeInsets.symmetric(vertical: 4.h),
                 decoration: BoxDecoration(
                   color: AppColor.lightSurfaceColor,
                   borderRadius: BorderRadius.circular(8.r),
                 ),
-                child: Obx(
-                  () => Row(
-                    children: [
-                      // Login Tab Button
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () => controller.changeTab(0),
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 200),
-                            padding: EdgeInsets.symmetric(vertical: 10.h),
-                            decoration: BoxDecoration(
-                              color: controller.selectedTab.value == 0
-                                  ? const Color(0xFF031606)
-                                  : Colors.transparent,
-                              borderRadius: BorderRadius.circular(8.r),
-                              border: Border.all(
-                                color: controller.selectedTab.value == 0
-                                    ? AppColor.primaryColor.withOpacity(0.4)
-                                    : Colors.transparent,
-                              ),
-                            ),
-                            child: Center(
-                              child: Text(
-                                'Login',
-                                style: AppTextTheme.bodyTextStyle.copyWith(
-                                  color: controller.selectedTab.value == 0
-                                      ? Colors.white
-                                      : AppColor.lightTextSecondaryColor,
-                                  fontWeight: controller.selectedTab.value == 0
-                                      ? FontWeight.w700
-                                      : FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      // Sign Up Tab Button
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () => controller.changeTab(1),
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 200),
-                            padding: EdgeInsets.symmetric(vertical: 10.h),
-                            decoration: BoxDecoration(
-                              color: controller.selectedTab.value == 1
-                                  ? const Color(0xFF031606)
-                                  : Colors.transparent,
-                              borderRadius: BorderRadius.circular(8.r),
-                              border: Border.all(
-                                color: controller.selectedTab.value == 1
-                                    ? AppColor.primaryColor.withOpacity(0.4)
-                                    : Colors.transparent,
-                              ),
-                            ),
-                            child: Center(
-                              child: Text(
-                                'Sign Up',
-                                style: AppTextTheme.bodyTextStyle.copyWith(
-                                  color: controller.selectedTab.value == 1
-                                      ? Colors.white
-                                      : AppColor.lightTextSecondaryColor,
-                                  fontWeight: controller.selectedTab.value == 1
-                                      ? FontWeight.w700
-                                      : FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                child: Row(
+                  children: [
+                    TabBtn(
+                        controller: controller,
+                        index: 0,
+                        text: 'Login'
+                    ),
+                    TabBtn(
+                        controller: controller,
+                        index: 1,
+                        text: 'Sign Up'
+                    ),
+                  ],
+                )
               ),
 
               SizedBox(height: 32.h),
 
-              // Reactive Form Content switching smoothly between tabs
+              // Reactive Form Content
               Obx(() {
                 if (controller.selectedTab.value == 0) {
                   return _buildLoginForm(controller);
@@ -152,15 +95,7 @@ class LoginScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Email Input Field
-        Text(
-          'Email Address',
-          style: AppTextTheme.bodyTextStyle.copyWith(
-            color: AppColor.lightTextColor,
-            fontSize: 16.sp,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
+        labal_text('Email Address'),
         SizedBox(height: 8.h),
         TextFormField(
           controller: controller.emailController,
@@ -169,23 +104,13 @@ class LoginScreen extends StatelessWidget {
           ),
           decoration: _buildInputDecoration('Enter your email'),
         ),
-
         SizedBox(height: 24.h),
-
-        // Password Header Area
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              'Password',
-              style: AppTextTheme.bodyTextStyle.copyWith(
-                color: AppColor.lightTextColor,
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
+            labal_text('Password'),
             GestureDetector(
-              onTap: () => Get.toNamed('/forgot-password'),
+              onTap: () => Get.to(ForgotPasswordScreen()),
               child: Text(
                 'Forgot Password?',
                 style: AppTextTheme.bodyTextStyle.copyWith(
@@ -198,10 +123,8 @@ class LoginScreen extends StatelessWidget {
           ],
         ),
         SizedBox(height: 8.h),
-
-        // Password Input Field
         Obx(
-          () => TextFormField(
+              () => TextFormField(
             controller: controller.passwordController,
             obscureText: controller.obscurePassword.value,
             style: AppTextTheme.bodyTextStyle.copyWith(
@@ -221,39 +144,36 @@ class LoginScreen extends StatelessWidget {
             ),
           ),
         ),
-
-        // Dynamic Error Display
         Obx(
-          () => controller.hasError.value
+              () => controller.hasError.value
               ? Padding(
-                  padding: EdgeInsets.only(top: 12.h),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.warning_amber_rounded,
-                        color: const Color(0xFFD32F2F),
-                        size: 16.sp,
-                      ),
-                      SizedBox(width: 6.w),
-                      Text(
-                        'Please enter correct password',
-                        style: AppTextTheme.bodyTextStyle.copyWith(
-                          color: const Color(0xFFD32F2F),
-                          fontSize: 12.sp,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
+            padding: EdgeInsets.only(top: 12.h),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.warning_amber_rounded,
+                  color: const Color(0xFFD32F2F),
+                  size: 16.sp,
+                ),
+                SizedBox(width: 6.w),
+                Text(
+                  'Please enter correct password',
+                  style: AppTextTheme.bodyTextStyle.copyWith(
+                    color: const Color(0xFFD32F2F),
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w500,
                   ),
-                )
+                ),
+              ],
+            ),
+          )
               : const SizedBox.shrink(),
         ),
-
         SizedBox(height: 32.h),
         ActionButton(
           text: 'Login',
           onPressed: () {
-            // Trigger Login Logic
+            Get.to(HomeScreen());
           },
         )
       ],
@@ -264,15 +184,7 @@ class LoginScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Email Input Field
-        Text(
-          'Email Address',
-          style: AppTextTheme.bodyTextStyle.copyWith(
-            color: AppColor.lightTextColor,
-            fontSize: 16.sp,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
+        labal_text('Email Address'),
         SizedBox(height: 8.h),
         TextFormField(
           controller: controller.emailController,
@@ -281,23 +193,11 @@ class LoginScreen extends StatelessWidget {
           ),
           decoration: _buildInputDecoration('Enter your email'),
         ),
-
         SizedBox(height: 24.h),
-
-        // Password Header Area
-        Text(
-          'Password',
-          style: AppTextTheme.bodyTextStyle.copyWith(
-            color: AppColor.lightTextColor,
-            fontSize: 16.sp,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
+        labal_text('Password'),
         SizedBox(height: 8.h),
-
-        // Password Input Field
         Obx(
-          () => TextFormField(
+              () => TextFormField(
             controller: controller.passwordController,
             obscureText: controller.obscurePassword.value,
             style: AppTextTheme.bodyTextStyle.copyWith(
@@ -318,19 +218,11 @@ class LoginScreen extends StatelessWidget {
           ),
         ),
         SizedBox(height: 16.h),
-
-        Text(
-          'Re Type Password',
-          style: AppTextTheme.bodyTextStyle.copyWith(
-            color: AppColor.lightTextColor,
-            fontSize: 16.sp,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
+        labal_text('Re Type Password'),
         SizedBox(height: 8.h),
-
         Obx(
-          () => TextFormField(
+              () => TextFormField(
+            // Consider using a separate reTypePasswordController here
             controller: controller.passwordController,
             obscureText: controller.obscurePassword.value,
             style: AppTextTheme.bodyTextStyle.copyWith(
@@ -350,19 +242,14 @@ class LoginScreen extends StatelessWidget {
             ),
           ),
         ),
-
         SizedBox(height: 32.h),
-
-        // Login CTA Button
         ActionButton(
           text: 'Sign Up',
           onPressed: () {
-            // Trigger Sign Up Logic
+            Get.to(CreateAccountScreen());
           },
         ),
-
         SizedBox(height: 16.h),
-
         Text(
           'By clicking the “sign up” button, you accept the terms of the Privacy Policy.',
           style: TextStyle(
@@ -374,6 +261,17 @@ class LoginScreen extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+
+  Text labal_text(String text) {
+    return Text(
+      text,
+      style: AppTextTheme.bodyTextStyle.copyWith(
+        color: AppColor.lightTextColor,
+        fontSize: 16.sp,
+        fontWeight: FontWeight.w500,
+      ),
     );
   }
 
@@ -401,5 +299,3 @@ class LoginScreen extends StatelessWidget {
     );
   }
 }
-
-

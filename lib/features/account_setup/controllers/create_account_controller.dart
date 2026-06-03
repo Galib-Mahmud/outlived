@@ -1,4 +1,6 @@
 import 'package:get/get.dart';
+import 'package:outlive/features/account_setup/screens/social_setup_screen.dart';
+import 'package:outlive/features/home/screens/home_screen.dart';
 
 class StepItem {
   final String stepNumber;
@@ -82,4 +84,12 @@ class CreateAccountController extends GetxController {
       bulletPoints: ['Show Category Label → ON/OFF', 'Show Contact Info → ON/OFF'],
     ),
   ];
+
+  void completeSetup() {
+    if (selectedTab.value == 0) {
+      selectedTab.value = 1;
+    } else {
+      Get.to(SocialSetupScreen());
+    }
+  }
 }

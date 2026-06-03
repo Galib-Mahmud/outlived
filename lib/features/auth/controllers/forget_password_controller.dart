@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:outlive/features/auth/screens/otp_screen.dart';
 
 class ForgotPasswordController extends GetxController {
-  final emailController = TextEditingController(text: 'Rhebhek@gmail.com');
+  final emailController = TextEditingController();
   var isLoading = false.obs;
 
   void sendOtp() {
@@ -14,6 +15,7 @@ class ForgotPasswordController extends GetxController {
 
     isLoading.value = true;
     // Add your actual password reset/OTP request logic here
+    Get.to(OtpScreen());
   }
 
   @override

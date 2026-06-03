@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:outlive/core/theme/text_theme.dart';
+import 'package:outlive/core/universal_widgets/action_button.dart';
+import 'package:outlive/features/auth/widgets/tab_btn.dart';
 import '../../../core/theme/app_color.dart';
 import '../controllers/create_account_controller.dart';
+import '../widgets/account_setup_appbar.dart';
 
 class CreateAccountScreen extends StatelessWidget {
   const CreateAccountScreen({super.key});
@@ -13,36 +16,10 @@ class CreateAccountScreen extends StatelessWidget {
     final controller = Get.put(CreateAccountController());
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, color: AppColor.lightTextColor, size: 20.sp),
-          onPressed: () => Get.back(),
-        ),
-        title: Text(
-          'Create Content Account',
-          style: AppTextTheme.bodyTextStyle.copyWith(
-            color: AppColor.lightTextColor,
-            fontSize: 16.sp,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        centerTitle: true,
-        actions: [
-          TextButton(
-            onPressed: () => Get.toNamed('/next_route'),
-            child: Text(
-              'SKIP',
-              style: AppTextTheme.bodyTextStyle.copyWith(
-                color: AppColor.secondaryColor,
-                fontSize: 12.sp,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          SizedBox(width: 8.w),
-        ],
+      appBar: AccountSetupAppbar(
+          title: 'Create Content Account',
+        actionText: 'Skip',
+        onActionTap: controller.completeSetup,
       ),
       body: SafeArea(
         child: Column(
@@ -54,17 +31,26 @@ class CreateAccountScreen extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 24.w),
               child: Container(
                 width: double.infinity,
-                padding: EdgeInsets.all(2.r),
+                padding: EdgeInsets.symmetric(vertical: 4.h),
                 decoration: BoxDecoration(
                   color: AppColor.lightSurfaceColor,
                   borderRadius: BorderRadius.circular(8.r),
                 ),
-                child: Obx(() => Row(
+                child: Row(
                   children: [
-                    _buildTabButton(controller, title: 'Facebook', index: 0),
-                    _buildTabButton(controller, title: 'Instagram', index: 1),
+                    TabBtn(
+                      index: 0,
+                      text: 'Facebook',
+                      createAccountController: controller,
+                    ),
+                    TabBtn(
+                      index: 1,
+                      text: 'Instagram',
+                      createAccountController: controller,
+                    ),
+
                   ],
-                )),
+                )
               ),
             ),
 
@@ -73,7 +59,7 @@ class CreateAccountScreen extends StatelessWidget {
             // Responsive Step List Content View
             Expanded(
               child: Obx(() => AnimatedCrossFade(
-                duration: const Duration(milliseconds: 250),
+                duration: const Duration(milliseconds: 30),
                 crossFadeState: controller.selectedTab.value == 0
                     ? CrossFadeState.showFirst
                     : CrossFadeState.showSecond,
@@ -83,64 +69,16 @@ class CreateAccountScreen extends StatelessWidget {
             ),
 
             // Bottom Fixed Navigation Action Button
-            Padding(
-              padding: EdgeInsets.all(24.w),
-              child: SizedBox(
-                width: double.infinity,
-                height: 56.h,
-                child: ElevatedButton(
-                  onPressed: () {
-                    // Action logic when proceeding
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColor.primaryColor,
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14.r),
-                    ),
+            Obx(
+                ()=>Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
+                  child: ActionButton(
+                    text: controller.selectedTab.value == 0 ? 'Connect Facebook' : 'Connect Instagram',
+                    onPressed: controller.completeSetup,
                   ),
-                  child: Text(
-                    'Next',
-                    style: AppTextTheme.bodyTextStyle.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 16.sp,
-                    ),
-                  ),
-                ),
-              ),
-            ),
+                )
+            )
           ],
-        ),
-      ),
-    );
-  }
-
-  // Tab Item Builder helper method
-  Widget _buildTabButton(CreateAccountController controller, {required String title, required int index}) {
-    final isSelected = controller.selectedTab.value == index;
-    return Expanded(
-      child: GestureDetector(
-        onTap: () => controller.changeTab(index),
-        child: Container(
-          padding: EdgeInsets.symmetric(vertical: 10.h),
-          decoration: BoxDecoration(
-            color: isSelected ? const Color(0xFF031606) : Colors.transparent,
-            borderRadius: BorderRadius.circular(8.r),
-            border: Border.all(
-              color: isSelected ? AppColor.primaryColor.withOpacity(0.4) : Colors.transparent,
-            ),
-          ),
-          child: Center(
-            child: Text(
-              title,
-              style: AppTextTheme.bodyTextStyle.copyWith(
-                color: isSelected ? AppColor.lightTextColor : AppColor.lightTextSecondaryColor,
-                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-              ),
-            ),
-          ),
         ),
       ),
     );

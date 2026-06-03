@@ -11,6 +11,8 @@ class AppColor{
   static const Color lightBackgroundColor = Color(0xFFF3F3F3);
   static const Color lightSurfaceColor = Color(0xFFEBEBEB);
 
+  static const Color lightBoarderColor = Color(0xFFDEDEDE);
+
 
   static const Color lightTextColor = Color(0xFF000000);
   static const Color lightTextSecondaryColor = Color(0xFF616161);

@@ -3,8 +3,8 @@ import 'package:get/get.dart';
 
 class LoginController extends GetxController {
   // Text Editing Controllers
-  final emailController = TextEditingController(text: 'Rhebhek@gmail.com');
-  final passwordController = TextEditingController(text: 'password123');
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
 
   // Reactive variables
   var selectedTab = 0.obs; // 0 for Login, 1 for Sign Up

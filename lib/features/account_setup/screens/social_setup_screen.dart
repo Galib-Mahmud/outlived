@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:outlive/core/theme/text_theme.dart';
+import 'package:outlive/features/account_setup/controllers/create_account_controller.dart';
+import 'package:outlive/features/home/screens/home_screen.dart';
 import '../../../core/theme/app_color.dart';
+import '../../../core/universal_widgets/action_button.dart';
 import '../controllers/social_setup_controller.dart';
+import '../widgets/account_setup_appbar.dart';
 
 class SocialSetupScreen extends StatelessWidget {
   const SocialSetupScreen({super.key});
@@ -13,36 +17,12 @@ class SocialSetupScreen extends StatelessWidget {
     final controller = Get.put(SocialSetupController());
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, color: AppColor.lightTextColor, size: 20.sp),
-          onPressed: () => Get.back(),
-        ),
-        title: Text(
-          'Social Media Setup',
-          style: AppTextTheme.bodyTextStyle.copyWith(
-            color: AppColor.lightTextColor,
-            fontSize: 16.sp,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        centerTitle: true,
-        actions: [
-          TextButton(
-            onPressed: () => Get.toNamed('/home'),
-            child: Text(
-              'SKIP',
-              style: AppTextTheme.bodyTextStyle.copyWith(
-                color: AppColor.secondaryColor,
-                fontSize: 12.sp,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          SizedBox(width: 8.w),
-        ],
+      appBar: AccountSetupAppbar(
+        title: 'Create Content Account',
+        actionText: 'Skip',
+        onActionTap:(){
+          Get.to(HomeScreen());
+        }
       ),
       body: SafeArea(
         child: Column(
@@ -145,33 +125,14 @@ class SocialSetupScreen extends StatelessWidget {
 
             // --- Bottom Navigation Button ---
             Padding(
-              padding: EdgeInsets.all(24.w),
-              child: SizedBox(
-                width: double.infinity,
-                height: 56.h,
-                child: ElevatedButton(
-                  onPressed: () {
-                    // Navigate forward
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColor.primaryColor,
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14.r),
-                    ),
-                  ),
-                  child: Text(
-                    'Next',
-                    style: AppTextTheme.bodyTextStyle.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 16.sp,
-                    ),
-                  ),
-                ),
+              padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
+              child: ActionButton(
+                text: 'Complete Setup',
+                onPressed: (){
+                  Get.to(HomeScreen());
+                }
               ),
-            ),
+            )
           ],
         ),
       ),

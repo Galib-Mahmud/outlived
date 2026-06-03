@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:outlive/features/auth/screens/login_screen.dart';
 
 class OtpController extends GetxController {
   // 5 Focus nodes and text controllers for the 5 OTP boxes
@@ -30,6 +31,9 @@ class OtpController extends GetxController {
 
     isLoading.value = true;
     // Implement your verification API logic here
+    
+    Get.to(LoginScreen());
+    
   }
 
   @override

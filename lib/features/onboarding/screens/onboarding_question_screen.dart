@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:outlive/core/theme/text_theme.dart';
+import 'package:outlive/core/universal_widgets/round_action_btn.dart';
 import 'package:outlive/features/onboarding/controllers/onboarding_question_controller.dart';
 import '../../../core/theme/app_color.dart';
 
@@ -45,27 +46,10 @@ class OnboardingQuestionScreen extends StatelessWidget {
               const Spacer(flex: 4),
 
               // Next Button
-              SizedBox(
-                width: double.infinity,
-                height: 56.h,
-                child: ElevatedButton(
-                  onPressed: () => onboardingQuestionController.goToNextQuestion(),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColor.primaryColor,
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(28.r),
-                    ),
-                  ),
-                  child: Text(
-                    'Next',
-                    style: AppTextTheme.bodyTextStyle.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
+
+              RoundActionBtn(
+                  onPressed: onboardingQuestionController.goToNextQuestion,
+                  text: 'Next'
               ),
 
               SizedBox(height: 24.h),
