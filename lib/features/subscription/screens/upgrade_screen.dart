@@ -2,11 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:outlive/core/theme/text_theme.dart';
+import 'package:outlive/features/status/screens/status_screen.dart';
 import '../../../core/theme/app_color.dart';
+import '../../../core/universal_widgets/action_button.dart';
+import '../../home/screens/home_screen.dart';
 import '../controllers/upgrade_controller.dart';
 
 class UpgradeScreen extends StatelessWidget {
-  const UpgradeScreen({super.key});
+  const
+  UpgradeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -67,41 +71,14 @@ class UpgradeScreen extends StatelessWidget {
 
             // Bottom Fixed Navigation Action Button
             Padding(
-              padding: EdgeInsets.all(24.w),
-              child: SizedBox(
-                width: double.infinity,
-                height: 56.h,
-                child: Obx(() => ElevatedButton(
-                  onPressed: controller.isLoading.value ? null : controller.processUpgrade,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColor.primaryColor,
-                    foregroundColor: Colors.white,
-                    disabledBackgroundColor: AppColor.primaryColor.withOpacity(0.5),
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14.r),
-                    ),
-                  ),
-                  child: controller.isLoading.value
-                      ? SizedBox(
-                    height: 24.h,
-                    width: 24.w,
-                    child: const CircularProgressIndicator(
-                      color: Colors.white,
-                      strokeWidth: 2.5,
-                    ),
-                  )
-                      : Text(
-                    'Next',
-                    style: AppTextTheme.bodyTextStyle.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 16.sp,
-                    ),
-                  ),
-                )),
+              padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
+              child: ActionButton(
+                  text: 'Continue',
+                  onPressed: (){
+                    Get.to(StatusScreen());
+                  }
               ),
-            ),
+            )
           ],
         ),
       ),
@@ -109,7 +86,11 @@ class UpgradeScreen extends StatelessWidget {
   }
 
   // Tier Item Render Layout Builder with Stack-based Badging support
-  Widget _buildTierCard(UpgradeController controller, SubscriptionTier tier, bool isSelected) {
+  Widget _buildTierCard(
+      UpgradeController controller,
+      SubscriptionTier tier,
+      bool isSelected,
+      ) {
     return Stack(
       clipBehavior: Clip.none,
       children: [
@@ -118,46 +99,44 @@ class UpgradeScreen extends StatelessWidget {
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 200),
             width: double.infinity,
-            padding: EdgeInsets.all(16.r),
+            padding: EdgeInsets.symmetric(
+              horizontal: 16.w,
+              vertical: 18.h,
+            ),
             decoration: BoxDecoration(
               color: AppColor.lightSurfaceColor,
               borderRadius: BorderRadius.circular(14.r),
               border: Border.all(
-                color: isSelected ? AppColor.primaryColor : AppColor.primaryColor.withOpacity(0.1),
-                width: isSelected ? 2.r : 1.r,
+                color: isSelected
+                    ? AppColor.primaryColor
+                    : AppColor.primaryColor.withOpacity(0.1),
+                width: isSelected ? 4.r : 1.r,
               ),
             ),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Plan Circular Left Icon
+                /// Plan Icon
                 Container(
-                  width: 44.w,
-                  height: 44.h,
+                  width: 64.w,
+                  height: 64.w,
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.3),
                     shape: BoxShape.circle,
-                  ),
-                  child: Center(
-                    child: Image.asset(
-                      tier.iconPath,
-                      width: 24.w,
-                      height: 24.h,
-                      errorBuilder: (context, error, stackTrace) {
-                        // Fallback fallback icons matching standard asset structures
-                        if (tier.id == 'quarterly') return const Icon(Icons.star, color: Colors.amber);
-                        if (tier.id == 'annually') return const Icon(Icons.emoji_events, color: Colors.amber);
-                        return const Icon(Icons.military_tech, color: Colors.amber);
-                      },
+                    image: DecorationImage(
+                      image: AssetImage(tier.iconPath),
+                      fit: BoxFit.cover,
                     ),
                   ),
                 ),
 
-                SizedBox(width: 14.w),
+                SizedBox(width: 16.w),
 
-                // Core Metadata Descriptions Block
+                /// Text Area
                 Expanded(
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
                         tier.title,
@@ -167,9 +146,13 @@ class UpgradeScreen extends StatelessWidget {
                           fontWeight: FontWeight.w700,
                         ),
                       ),
+
                       SizedBox(height: 4.h),
+
                       Text(
                         tier.description,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                         style: AppTextTheme.bodyTextStyle.copyWith(
                           color: AppColor.lightTextTertiaryColor,
                           fontSize: 12.sp,
@@ -179,13 +162,21 @@ class UpgradeScreen extends StatelessWidget {
                   ),
                 ),
 
-                // Right Side Numeric Price Display
-                Text(
-                  tier.price,
-                  style: AppTextTheme.bodyTextStyle.copyWith(
-                    color: isSelected ? AppColor.primaryColor : AppColor.lightTextSecondaryColor,
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.w700,
+                SizedBox(width: 12.w),
+
+                /// Price
+                Align(
+                  alignment: Alignment.center,
+                  child: Text(
+                    tier.price,
+                    textAlign: TextAlign.end,
+                    style: AppTextTheme.bodyTextStyle.copyWith(
+                      color: isSelected
+                          ? AppColor.primaryColor
+                          : AppColor.lightTextSecondaryColor,
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
               ],
@@ -193,15 +184,18 @@ class UpgradeScreen extends StatelessWidget {
           ),
         ),
 
-        // Discount Promo Ribbon Badge Position Layer
+        /// Badge
         if (tier.badgeText != null)
           Positioned(
             top: -10.h,
             right: 16.w,
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+              padding: EdgeInsets.symmetric(
+                horizontal: 10.w,
+                vertical: 4.h,
+              ),
               decoration: BoxDecoration(
-                color: const Color(0xFF2E5A36), // Balanced dark green discount indicator background
+                color: const Color(0xFF2E5A36),
                 borderRadius: BorderRadius.circular(20.r),
               ),
               child: Text(

@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:outlive/core/theme/text_theme.dart';
 import 'package:outlive/features/account_setup/controllers/create_account_controller.dart';
 import 'package:outlive/features/home/screens/home_screen.dart';
+import 'package:outlive/features/subscription/screens/upgrade_screen.dart';
 import '../../../core/theme/app_color.dart';
 import '../../../core/universal_widgets/action_button.dart';
 import '../controllers/social_setup_controller.dart';
@@ -21,7 +22,7 @@ class SocialSetupScreen extends StatelessWidget {
         title: 'Create Content Account',
         actionText: 'Skip',
         onActionTap:(){
-          Get.to(HomeScreen());
+          Get.to(UpgradeScreen());
         }
       ),
       body: SafeArea(
