@@ -9,11 +9,11 @@ enum FontFamily {
 
 class AppTheme {
 
-  final lightTheme = ThemeData(
+  ThemeData get lightTheme => ThemeData(
     brightness: Brightness.light,
     primarySwatch: Colors.blue,
     scaffoldBackgroundColor: Colors.white,
-    appBarTheme: AppBarTheme(
+    appBarTheme: const AppBarTheme(
       color: Colors.blue,
       elevation: 0,
       iconTheme: IconThemeData(color: Colors.white),
@@ -21,7 +21,7 @@ class AppTheme {
     )
   );
 
-  final darkTheme = ThemeData(
+  ThemeData get darkTheme => ThemeData(
     brightness: Brightness.dark,
     scaffoldBackgroundColor: AppColor.lightBackgroundColor,
     fontFamily: FontFamily.inter.name,

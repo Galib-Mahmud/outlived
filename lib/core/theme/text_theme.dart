@@ -5,14 +5,14 @@ import 'package:outlive/core/theme/app_theme.dart';
 
 class AppTextTheme {
 
-  static final titleTextStyle = TextStyle(
+  static TextStyle get titleTextStyle => TextStyle(
       fontSize: 24.sp,
       color: AppColor.lightTextColor,
       fontFamily: FontFamily.inter.name,
       fontWeight: FontWeight.w700
   );
 
-  static final bodyTextStyle = TextStyle(
+  static TextStyle get bodyTextStyle => TextStyle(
     fontSize: 14.sp,
     color: AppColor.lightTextSecondaryColor,
     fontFamily: FontFamily.inter.name,
