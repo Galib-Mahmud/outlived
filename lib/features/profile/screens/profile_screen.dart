@@ -3,9 +3,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:outlive/core/theme/app_theme.dart';
 import 'package:outlive/core/theme/text_theme.dart';
+import 'package:outlive/features/profile/screens/privacy_policy_screen.dart';
+import 'package:outlive/features/profile/screens/profile_update_screen.dart';
+import 'package:outlive/features/profile/screens/terms_conditions_screen.dart';
 import '../../../core/theme/app_color.dart';
 import '../widgets/custom_switch.dart';
 import '../widgets/delete_bottom_sheet.dart';
+import 'chnage_password_screen.dart';
 import 'faq_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -90,7 +94,7 @@ class ProfileScreen extends StatelessWidget {
                 children: [
                   _buildMenuRow(
                     label: 'Profile Update',
-                    onTap: () => Get.toNamed('/profile-update'),
+                      onTap: () => Get.to(ProfileUpdateScreen())
                   ),
                   SizedBox(height: 12.h),
                   _buildMenuRow(
@@ -108,7 +112,7 @@ class ProfileScreen extends StatelessWidget {
                 children: [
                   _buildMenuRow(
                     label: 'Change Password',
-                    onTap: () => Get.toNamed('/change-password'),
+                      onTap: () => Get.to(ChnagePasswordScreen())
                   ),
                   SizedBox(height: 12.h),
                   _buildMenuRow(
@@ -143,12 +147,12 @@ class ProfileScreen extends StatelessWidget {
                   SizedBox(height: 12.h),
                   _buildMenuRow(
                     label: 'Terms & Conditions',
-                    onTap: () => Get.toNamed('/terms'),
+                      onTap: () => Get.to(TermsConditionsScreen())
                   ),
                   SizedBox(height: 12.h),
                   _buildMenuRow(
                     label: 'Privacy Policy',
-                    onTap: () => Get.toNamed('/privacy'),
+                      onTap: () => Get.to(PrivacyPolicyScreen())
                   ),
                   SizedBox(height: 12.h),
                   _buildMenuRow(
