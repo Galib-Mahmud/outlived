@@ -224,10 +224,11 @@ class HomeScreen extends StatelessWidget {
                       children: [
                         Row(
                           children: [
-                            Icon(
-                              Icons.call,
-                              color: const Color(0xFF25D366),
-                              size: 24.sp,
+                            Image.asset(
+                              'assets/icons/whatsapp.png',
+                              width: 20.w,
+                              height: 20.h,
+                              fit: BoxFit.cover,
                             ),
                             SizedBox(width: 8.w),
                             Column(
@@ -236,7 +237,7 @@ class HomeScreen extends StatelessWidget {
                                 Text(
                                   controller.memoryPost.author,
                                   style: TextStyle(
-                                    fontSize: 15.sp,
+                                    fontSize: 16.sp,
                                     fontWeight: FontWeight.w700,
                                     color: const Color(0xFF1A1A1A),
                                   ),
@@ -245,7 +246,7 @@ class HomeScreen extends StatelessWidget {
                                   controller.memoryPost.relativeTime,
                                   style: TextStyle(
                                     fontSize: 12.sp,
-                                    color: const Color(0xFFBCAAA4),
+                                    color: AppColor.secondaryColor,
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
@@ -265,7 +266,7 @@ class HomeScreen extends StatelessWidget {
                           child: Text(
                             '• ${controller.memoryPost.tag}',
                             style: TextStyle(
-                              color: const Color(0xFF2E5A36),
+                              color: AppColor.secondaryColor,
                               fontSize: 11.sp,
                               fontWeight: FontWeight.w700,
                             ),
@@ -276,7 +277,11 @@ class HomeScreen extends StatelessWidget {
                     SizedBox(height: 16.h),
                     Container(
                       width: double.infinity,
-                      padding: EdgeInsets.all(14.r),
+                      padding: EdgeInsets.only(
+                        top: 14.h,
+                        right: 14.w,
+                        bottom: 14.h,
+                      ),
                       decoration: BoxDecoration(
                         color: const Color(0xFFF5F5F5),
                         borderRadius: BorderRadius.circular(14.r),
@@ -287,7 +292,13 @@ class HomeScreen extends StatelessWidget {
                           Container(
                             width: 3.w,
                             height: 64.h,
-                            color: const Color(0xFF2E5A36),
+                            decoration: BoxDecoration(
+                              color: AppColor.primaryColor,
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(14.r),
+                                bottomLeft: Radius.circular(14.r),
+                              )
+                            ),
                           ),
                           SizedBox(width: 12.w),
                           Expanded(
@@ -314,14 +325,7 @@ class HomeScreen extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    'Good Deed Posts',
-                    style: TextStyle(
-                      fontSize: 18.sp,
-                      fontWeight: FontWeight.w700,
-                      color: const Color(0xFF1A1A1A),
-                    ),
-                  ),
+                  label('Good Deed Posts'),
                   GestureDetector(
                     onTap: controller.handleCreateNewDeed,
                     child: Text(
@@ -329,7 +333,7 @@ class HomeScreen extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 13.sp,
                         fontWeight: FontWeight.w600,
-                        color: const Color(0xFFC49A45),
+                        color: AppColor.secondaryColor
                       ),
                     ),
                   ),
@@ -361,10 +365,11 @@ class HomeScreen extends StatelessWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Icon(
-                                Icons.brightness_7_outlined,
-                                color: const Color(0xFF2E5A36),
-                                size: 20.sp,
+                              Image.asset(
+                                'assets/icons/deed_icon.png',
+                                width: 24.w,
+                                height: 24.h,
+                                fit: BoxFit.cover,
                               ),
                               Text(
                                 deed.timestamp,
@@ -425,14 +430,7 @@ class HomeScreen extends StatelessWidget {
               SizedBox(height: 24.h),
 
               // --- IMPACT GRID MEASUREMENT ROW ---
-              Text(
-                'Your Impact',
-                style: TextStyle(
-                  fontSize: 18.sp,
-                  fontWeight: FontWeight.w700,
-                  color: const Color(0xFF1A1A1A),
-                ),
-              ),
+              label('Your Impact'),
 
               SizedBox(height: 14.h),
 
@@ -518,18 +516,15 @@ class HomeScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Daily Reminder Card',
-                      style: TextStyle(
-                        fontSize: 15.sp,
-                        fontWeight: FontWeight.w700,
-                        color: const Color(0xFF1A1A1A),
-                      ),
-                    ),
+                    label('Daily Reminder Card'),
                     SizedBox(height: 12.h),
                     Container(
                       width: double.infinity,
-                      padding: EdgeInsets.all(14.r),
+                      padding: EdgeInsets.only(
+                        top: 14.h,
+                        right: 14.w,
+                        bottom: 14.h,
+                      ),
                       decoration: BoxDecoration(
                         color: const Color(0xFFF5F5F5),
                         borderRadius: BorderRadius.circular(12.r),
@@ -539,7 +534,13 @@ class HomeScreen extends StatelessWidget {
                           Container(
                             width: 3.w,
                             height: 24.h,
-                            color: const Color(0xFF2E5A36),
+                            decoration: BoxDecoration(
+                              color: AppColor.primaryColor,
+                              borderRadius: BorderRadius.only(
+                                topRight: Radius.circular(12.r),
+                                bottomRight: Radius.circular(12.r),
+                              )
+                            ),
                           ),
                           SizedBox(width: 12.w),
                           Text(
@@ -562,5 +563,16 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Text label(String text) {
+    return Text(
+      text,
+                  style: AppTextTheme.bodyTextStyle.copyWith(
+                    fontSize: 18.sp,
+                    fontWeight: FontWeight.w700,
+                    color: AppColor.lightTextColor
+                  ),
+                );
   }
 }
