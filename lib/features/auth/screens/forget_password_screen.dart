@@ -3,6 +3,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:outlive/core/theme/text_theme.dart';
 import 'package:outlive/core/universal_widgets/action_button.dart';
+import 'package:outlive/core/universal_widgets/auth_header.dart';
+import 'package:outlive/core/universal_widgets/custom_label.dart';
+import 'package:outlive/core/universal_widgets/custom_text_field.dart';
 import '../../../core/theme/app_color.dart';
 import '../controllers/forget_password_controller.dart';
 
@@ -29,28 +32,7 @@ class ForgotPasswordScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 20.h),
-
-              // Top Logo Branding & Greeting
-              Center(
-                child: Column(
-                  children: [
-                    Image.asset(
-                      'assets/images/logo_text.png',
-                      width: 140.w,
-                    ),
-                    SizedBox(height: 8.h),
-                    Text(
-                      'Assalamu Alaikum',
-                      style: AppTextTheme.bodyTextStyle.copyWith(
-                        color: AppColor.lightTextColor,
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
+              const AuthHeader(),
               SizedBox(height: 48.h),
 
               // Page Header Title
@@ -63,42 +45,13 @@ class ForgotPasswordScreen extends StatelessWidget {
               ),
 
               SizedBox(height: 24.h),
-
-              // Input Field Label
-              Text(
-                'Email Address',
-                style: AppTextTheme.bodyTextStyle.copyWith(
-                  color: AppColor.lightTextColor,
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-
+              const CustomLabel(text: 'Email Address'),
               SizedBox(height: 8.h),
 
               // Email Form Field
-              TextFormField(
+              CustomTextField(
                 controller: controller.emailController,
-                style: AppTextTheme.bodyTextStyle.copyWith(color: AppColor.lightTextColor),
-                decoration: InputDecoration(
-                  hintText: 'Enter your email',
-                  hintStyle: AppTextTheme.bodyTextStyle.copyWith(color: AppColor.lightTextTertiaryColor),
-                  fillColor: AppColor.lightSurfaceColor,
-                  filled: true,
-                  contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.r),
-                    borderSide: BorderSide(color: AppColor.primaryColor.withOpacity(0.1)),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.r),
-                    borderSide: BorderSide(color: AppColor.primaryColor.withOpacity(0.1)),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.r),
-                    borderSide: const BorderSide(color: AppColor.primaryColor),
-                  ),
-                ),
+                hintText: 'Enter your email',
               ),
 
               SizedBox(height: 32.h),

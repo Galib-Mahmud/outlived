@@ -4,6 +4,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:outlive/core/theme/text_theme.dart';
 import 'package:outlive/core/universal_widgets/action_button.dart';
+import 'package:outlive/core/universal_widgets/auth_header.dart';
+import 'package:outlive/core/universal_widgets/custom_label.dart';
 import 'package:outlive/features/auth/controllers/otp_controller.dart';
 import '../../../core/theme/app_color.dart';
 
@@ -30,28 +32,7 @@ class OtpScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 20.h),
-
-              // Top Logo Branding & Greeting
-              Center(
-                child: Column(
-                  children: [
-                    Image.asset(
-                      'assets/images/logo_text.png',
-                      width: 140.w,
-                    ),
-                    SizedBox(height: 8.h),
-                    Text(
-                      'Assalamu Alaikum',
-                      style: AppTextTheme.bodyTextStyle.copyWith(
-                        color: AppColor.lightTextColor,
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
+              const AuthHeader(),
               SizedBox(height: 48.h),
 
               // Page Header Title
@@ -64,17 +45,7 @@ class OtpScreen extends StatelessWidget {
               ),
 
               SizedBox(height: 24.h),
-
-              // Input Field Label
-              Text(
-                'Enter Code',
-                style: AppTextTheme.bodyTextStyle.copyWith(
-                  color: AppColor.lightTextColor,
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-
+              const CustomLabel(text: 'Enter Code'),
               SizedBox(height: 16.h),
 
               // 5-Digit OTP Row Block

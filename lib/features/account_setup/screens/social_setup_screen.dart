@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:outlive/core/theme/text_theme.dart';
-import 'package:outlive/features/account_setup/controllers/create_account_controller.dart';
+import 'package:outlive/core/universal_widgets/custom_text_field.dart';
+import 'package:outlive/core/universal_widgets/small_action_button.dart';
+import 'package:outlive/core/universal_widgets/social_connect_row.dart';
 import 'package:outlive/features/home/screens/home_screen.dart';
 import 'package:outlive/features/subscription/screens/upgrade_screen.dart';
 import '../../../core/theme/app_color.dart';
@@ -21,9 +22,7 @@ class SocialSetupScreen extends StatelessWidget {
       appBar: AccountSetupAppbar(
         title: 'Create Content Account',
         actionText: 'Skip',
-        onActionTap:(){
-          Get.to(UpgradeScreen());
-        }
+        onActionTap: () => Get.to(() => const UpgradeScreen()),
       ),
       body: SafeArea(
         child: Column(
@@ -34,36 +33,22 @@ class SocialSetupScreen extends StatelessWidget {
                 child: Column(
                   children: [
                     // --- Facebook Row ---
-                    Row(
-                      children: [
-                        _buildSocialIconBox('assets/icons/facebook.png'), // Replace with your asset paths
-                        SizedBox(width: 12.w),
-                        Expanded(
-                          child: Obx(() => _buildActionButton(
-                            text: controller.isFacebookConnected.value ? 'Connected' : 'Connect',
-                            isConnected: controller.isFacebookConnected.value,
-                            onTap: controller.connectFacebook,
-                          )),
-                        ),
-                      ],
-                    ),
+                    Obx(() => SocialConnectRow(
+                      iconPath: 'assets/icons/facebook.png',
+                      buttonText: controller.isFacebookConnected.value ? 'Connected' : 'Connect',
+                      isConnected: controller.isFacebookConnected.value,
+                      onTap: controller.connectFacebook,
+                    )),
 
                     SizedBox(height: 16.h),
 
                     // --- Instagram Row ---
-                    Row(
-                      children: [
-                        _buildSocialIconBox('assets/icons/instagram.png'),
-                        SizedBox(width: 12.w),
-                        Expanded(
-                          child: Obx(() => _buildActionButton(
-                            text: controller.isInstagramConnected.value ? 'Connected' : 'Connect',
-                            isConnected: controller.isInstagramConnected.value,
-                            onTap: controller.connectInstagram,
-                          )),
-                        ),
-                      ],
-                    ),
+                    Obx(() => SocialConnectRow(
+                      iconPath: 'assets/icons/instagram.png',
+                      buttonText: controller.isInstagramConnected.value ? 'Connected' : 'Connect',
+                      isConnected: controller.isInstagramConnected.value,
+                      onTap: controller.connectInstagram,
+                    )),
 
                     SizedBox(height: 16.h),
 
@@ -76,39 +61,15 @@ class SocialSetupScreen extends StatelessWidget {
                           child: Row(
                             children: [
                               Expanded(
-                                child: SizedBox(
-                                  height: 48.h,
-                                  child: TextFormField(
-                                    controller: controller.whatsappController,
-                                    style: AppTextTheme.bodyTextStyle.copyWith(color: AppColor.lightTextColor, fontSize: 14.sp),
-                                    keyboardType: TextInputType.phone,
-                                    decoration: InputDecoration(
-                                      hintText: 'Enter WhatsApp number',
-                                      hintStyle: AppTextTheme.bodyTextStyle.copyWith(
-                                        color: AppColor.lightTextTertiaryColor.withOpacity(0.4),
-                                        fontSize: 14.sp,
-                                      ),
-                                      fillColor: AppColor.lightSurfaceColor,
-                                      filled: true,
-                                      contentPadding: EdgeInsets.symmetric(horizontal: 14.w),
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(8.r),
-                                        borderSide: BorderSide(color: AppColor.primaryColor.withOpacity(0.1)),
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(8.r),
-                                        borderSide: BorderSide(color: AppColor.primaryColor.withOpacity(0.1)),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(8.r),
-                                        borderSide: const BorderSide(color: AppColor.primaryColor),
-                                      ),
-                                    ),
-                                  ),
+                                child: CustomTextField(
+                                  controller: controller.whatsappController,
+                                  hintText: 'Enter WhatsApp number',
+                                  keyboardType: TextInputType.phone,
+                                  contentPadding: EdgeInsets.symmetric(horizontal: 14.w),
                                 ),
                               ),
                               SizedBox(width: 8.w),
-                              Obx(() => _buildActionButton(
+                              Obx(() => SmallActionButton(
                                 text: controller.isWhatsAppConnected.value ? 'Connected' : 'Connect',
                                 isConnected: controller.isWhatsAppConnected.value,
                                 onTap: controller.connectWhatsApp,
@@ -129,9 +90,7 @@ class SocialSetupScreen extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
               child: ActionButton(
                 text: 'Complete Setup',
-                onPressed: (){
-                  Get.to(HomeScreen());
-                }
+                onPressed: () => Get.to(() => const HomeScreen()),
               ),
             )
           ],
@@ -143,7 +102,7 @@ class SocialSetupScreen extends StatelessWidget {
   // Helper template for social channel brand labels on left side
   Widget _buildSocialIconBox(String assetPath) {
     return Container(
-      width: 56.w,
+      width: 72.w, // Standardized with SocialConnectRow
       height: 48.h,
       decoration: BoxDecoration(
         color: AppColor.lightSurfaceColor,
@@ -153,47 +112,18 @@ class SocialSetupScreen extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset(assetPath, width: 24.w, height: 24.h, errorBuilder: (context, error, stackTrace) {
-              // Fallback placeholder icons in case local network assets are initializing
-              if (assetPath.contains('facebook')) return const Icon(Icons.facebook, color: Colors.blue);
-              if (assetPath.contains('whatsapp')) return const Icon(Icons.phone, color: Colors.green);
-              return const Icon(Icons.camera_alt, color: Colors.pink);
-            }),
-            SizedBox(width: 2.w),
-            Icon(Icons.arrow_drop_down, color: AppColor.lightTextTertiaryColor, size: 16.sp),
+            Image.asset(
+              assetPath,
+              width: 24.w,
+              height: 24.h,
+              errorBuilder: (context, error, stackTrace) {
+                if (assetPath.contains('whatsapp')) return const Icon(Icons.phone, color: Colors.green);
+                return const Icon(Icons.link, color: AppColor.primaryColor);
+              },
+            ),
+            SizedBox(width: 4.w),
+            Icon(Icons.arrow_drop_down_rounded, color: AppColor.lightTextTertiaryColor, size: 20.sp),
           ],
-        ),
-      ),
-    );
-  }
-
-  // Reusable custom buttons to avoid repetitive decoration declarations
-  Widget _buildActionButton({
-    required String text,
-    required bool isConnected,
-    required VoidCallback onTap,
-    double? width,
-  }) {
-    return SizedBox(
-      width: width ?? double.infinity,
-      height: 48.h,
-      child: ElevatedButton(
-        onPressed: onTap,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: isConnected ? Colors.blueGrey.withOpacity(0.3) : AppColor.primaryColor,
-          foregroundColor: Colors.white,
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8.r),
-          ),
-        ),
-        child: Text(
-          text,
-          style: AppTextTheme.bodyTextStyle.copyWith(
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
-            fontSize: 14.sp,
-          ),
         ),
       ),
     );

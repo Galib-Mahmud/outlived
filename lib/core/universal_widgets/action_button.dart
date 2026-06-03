@@ -5,13 +5,15 @@ import '../theme/app_color.dart';
 import '../theme/text_theme.dart';
 
 class ActionButton extends StatelessWidget {
-  String text;
-  void Function()? onPressed;
+  final String text;
+  final void Function()? onPressed;
+  final bool isLoading;
 
-  ActionButton({
+  const ActionButton({
     super.key,
     required this.text,
     this.onPressed,
+    this.isLoading = false,
   });
 
   @override
@@ -20,22 +22,32 @@ class ActionButton extends StatelessWidget {
       width: double.infinity,
       height: 49.h,
       child: ElevatedButton(
-        onPressed: onPressed,
+        onPressed: isLoading ? null : onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColor.primaryColor,
           foregroundColor: Colors.white,
+          disabledBackgroundColor: AppColor.primaryColor.withOpacity(0.5),
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10.r),
           ),
         ),
-        child: Text(
-          text,
-          style: AppTextTheme.bodyTextStyle.copyWith(
-            color: Colors.white,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
+        child: isLoading
+            ? SizedBox(
+                height: 20.h,
+                width: 20.w,
+                child: const CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2,
+                ),
+              )
+            : Text(
+                text,
+                style: AppTextTheme.bodyTextStyle.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
       ),
     );
   }

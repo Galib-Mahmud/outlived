@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:outlive/core/theme/app_theme.dart';
 import 'package:outlive/core/theme/text_theme.dart';
-import 'package:outlive/features/account_setup/screens/social_setup_screen.dart';
-import 'package:outlive/features/home/screens/home_screen.dart';
+import 'package:outlive/core/universal_widgets/auth_header.dart';
+import 'package:outlive/core/universal_widgets/custom_label.dart';
+import 'package:outlive/core/universal_widgets/custom_text_field.dart';
 import 'package:outlive/features/landing/screens/landing_screen.dart';
 import '../../../core/theme/app_color.dart';
 import '../../../core/universal_widgets/action_button.dart';
@@ -28,49 +28,31 @@ class LoginScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 40.h),
-
-              // Top Logo Branding & Greeting
-              Center(
-                child: Column(
-                  children: [
-                    Image.asset('assets/images/logo_text.png', width: 140.w),
-                    SizedBox(height: 8.h),
-                    Text(
-                      'Assalamu Alaikum',
-                      style: AppTextTheme.bodyTextStyle.copyWith(
-                        color: AppColor.lightTextColor,
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
+              const AuthHeader(),
               SizedBox(height: 40.h),
 
               // Custom Tab Switcher (Login / Sign Up)
               Container(
                 width: double.infinity,
-                  padding: EdgeInsets.symmetric(vertical: 4.h),
+                padding: EdgeInsets.symmetric(vertical: 4.h),
                 decoration: BoxDecoration(
                   color: AppColor.lightSurfaceColor,
                   borderRadius: BorderRadius.circular(8.r),
                 ),
-                child: Row(
+                child: Obx(() => Row(
                   children: [
                     TabBtn(
-                        controller: controller,
-                        index: 0,
-                        text: 'Login'
+                      isActive: controller.selectedTab.value == 0,
+                      onTap: () => controller.selectedTab.value = 0,
+                      text: 'Login',
                     ),
                     TabBtn(
-                        controller: controller,
-                        index: 1,
-                        text: 'Sign Up'
+                      isActive: controller.selectedTab.value == 1,
+                      onTap: () => controller.selectedTab.value = 1,
+                      text: 'Sign Up',
                     ),
                   ],
-                )
+                )),
               ),
 
               SizedBox(height: 32.h),
@@ -96,22 +78,19 @@ class LoginScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        labal_text('Email Address'),
+        const CustomLabel(text: 'Email Address'),
         SizedBox(height: 8.h),
-        TextFormField(
+        CustomTextField(
           controller: controller.emailController,
-          style: AppTextTheme.bodyTextStyle.copyWith(
-            color: AppColor.lightTextColor,
-          ),
-          decoration: _buildInputDecoration('Enter your email'),
+          hintText: 'Enter your email',
         ),
         SizedBox(height: 24.h),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            labal_text('Password'),
+            const CustomLabel(text: 'Password'),
             GestureDetector(
-              onTap: () => Get.to(ForgotPasswordScreen()),
+              onTap: () => Get.to(() => const ForgotPasswordScreen()),
               child: Text(
                 'Forgot Password?',
                 style: AppTextTheme.bodyTextStyle.copyWith(
@@ -124,58 +103,48 @@ class LoginScreen extends StatelessWidget {
           ],
         ),
         SizedBox(height: 8.h),
-        Obx(
-              () => TextFormField(
-            controller: controller.passwordController,
-            obscureText: controller.obscurePassword.value,
-            style: AppTextTheme.bodyTextStyle.copyWith(
-              color: AppColor.lightTextColor,
+        Obx(() => CustomTextField(
+          controller: controller.passwordController,
+          hintText: 'Enter your password',
+          obscureText: controller.obscurePassword.value,
+          suffixIcon: IconButton(
+            icon: Icon(
+              controller.obscurePassword.value
+                  ? Icons.visibility_off_outlined
+                  : Icons.visibility_outlined,
+              color: AppColor.lightTextTertiaryColor,
+              size: 20.sp,
             ),
-            decoration: _buildInputDecoration('Enter your password').copyWith(
-              suffixIcon: IconButton(
-                icon: Icon(
-                  controller.obscurePassword.value
-                      ? Icons.visibility_off_outlined
-                      : Icons.visibility_outlined,
-                  color: AppColor.lightTextTertiaryColor,
-                  size: 20.sp,
-                ),
-                onPressed: controller.togglePasswordVisibility,
-              ),
-            ),
+            onPressed: controller.togglePasswordVisibility,
           ),
-        ),
-        Obx(
-              () => controller.hasError.value
-              ? Padding(
-            padding: EdgeInsets.only(top: 12.h),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.warning_amber_rounded,
+        )),
+        Obx(() => controller.hasError.value
+            ? Padding(
+          padding: EdgeInsets.only(top: 12.h),
+          child: Row(
+            children: [
+              Icon(
+                Icons.warning_amber_rounded,
+                color: const Color(0xFFD32F2F),
+                size: 16.sp,
+              ),
+              SizedBox(width: 6.w),
+              Text(
+                'Please enter correct password',
+                style: AppTextTheme.bodyTextStyle.copyWith(
                   color: const Color(0xFFD32F2F),
-                  size: 16.sp,
+                  fontSize: 12.sp,
+                  fontWeight: FontWeight.w500,
                 ),
-                SizedBox(width: 6.w),
-                Text(
-                  'Please enter correct password',
-                  style: AppTextTheme.bodyTextStyle.copyWith(
-                    color: const Color(0xFFD32F2F),
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
-          )
-              : const SizedBox.shrink(),
-        ),
+              ),
+            ],
+          ),
+        )
+            : const SizedBox.shrink()),
         SizedBox(height: 32.h),
         ActionButton(
           text: 'Login',
-          onPressed: () {
-            Get.to(LandingScreen());
-          },
+          onPressed: () => Get.to(() => const LandingScreen()),
         )
       ],
     );
@@ -185,76 +154,58 @@ class LoginScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        labal_text('Email Address'),
+        const CustomLabel(text: 'Email Address'),
         SizedBox(height: 8.h),
-        TextFormField(
+        CustomTextField(
           controller: controller.emailController,
-          style: AppTextTheme.bodyTextStyle.copyWith(
-            color: AppColor.lightTextColor,
-          ),
-          decoration: _buildInputDecoration('Enter your email'),
+          hintText: 'Enter your email',
         ),
         SizedBox(height: 24.h),
-        labal_text('Password'),
+        const CustomLabel(text: 'Password'),
         SizedBox(height: 8.h),
-        Obx(
-              () => TextFormField(
-            controller: controller.passwordController,
-            obscureText: controller.obscurePassword.value,
-            style: AppTextTheme.bodyTextStyle.copyWith(
-              color: AppColor.lightTextColor,
+        Obx(() => CustomTextField(
+          controller: controller.passwordController,
+          hintText: 'Enter your password',
+          obscureText: controller.obscurePassword.value,
+          suffixIcon: IconButton(
+            icon: Icon(
+              controller.obscurePassword.value
+                  ? Icons.visibility_off_outlined
+                  : Icons.visibility_outlined,
+              color: AppColor.lightTextTertiaryColor,
+              size: 20.sp,
             ),
-            decoration: _buildInputDecoration('Enter your password').copyWith(
-              suffixIcon: IconButton(
-                icon: Icon(
-                  controller.obscurePassword.value
-                      ? Icons.visibility_off_outlined
-                      : Icons.visibility_outlined,
-                  color: AppColor.lightTextTertiaryColor,
-                  size: 20.sp,
-                ),
-                onPressed: controller.togglePasswordVisibility,
-              ),
-            ),
+            onPressed: controller.togglePasswordVisibility,
           ),
-        ),
+        )),
         SizedBox(height: 16.h),
-        labal_text('Re Type Password'),
+        const CustomLabel(text: 'Re Type Password'),
         SizedBox(height: 8.h),
-        Obx(
-              () => TextFormField(
-            // Consider using a separate reTypePasswordController here
-            controller: controller.passwordController,
-            obscureText: controller.obscurePassword.value,
-            style: AppTextTheme.bodyTextStyle.copyWith(
-              color: AppColor.lightTextColor,
+        Obx(() => CustomTextField(
+          // Consider using a separate reTypePasswordController here
+          controller: controller.passwordController,
+          hintText: 'Enter your password',
+          obscureText: controller.obscurePassword.value,
+          suffixIcon: IconButton(
+            icon: Icon(
+              controller.obscurePassword.value
+                  ? Icons.visibility_off_outlined
+                  : Icons.visibility_outlined,
+              color: AppColor.lightTextTertiaryColor,
+              size: 20.sp,
             ),
-            decoration: _buildInputDecoration('Enter your password').copyWith(
-              suffixIcon: IconButton(
-                icon: Icon(
-                  controller.obscurePassword.value
-                      ? Icons.visibility_off_outlined
-                      : Icons.visibility_outlined,
-                  color: AppColor.lightTextTertiaryColor,
-                  size: 20.sp,
-                ),
-                onPressed: controller.togglePasswordVisibility,
-              ),
-            ),
+            onPressed: controller.togglePasswordVisibility,
           ),
-        ),
+        )),
         SizedBox(height: 32.h),
         ActionButton(
           text: 'Sign Up',
-          onPressed: () {
-            Get.to(CreateAccountScreen());
-          },
+          onPressed: () => Get.to(() => const CreateAccountScreen()),
         ),
         SizedBox(height: 16.h),
         Text(
           'By clicking the “sign up” button, you accept the terms of the Privacy Policy.',
-          style: TextStyle(
-            fontFamily: FontFamily.sfprodisplay.name,
+          style: AppTextTheme.bodyTextStyle.copyWith(
             color: AppColor.lightTextTertiaryColor,
             fontSize: 12.sp,
             fontWeight: FontWeight.w700,
@@ -262,41 +213,6 @@ class LoginScreen extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-
-  Text labal_text(String text) {
-    return Text(
-      text,
-      style: AppTextTheme.bodyTextStyle.copyWith(
-        color: AppColor.lightTextColor,
-        fontSize: 16.sp,
-        fontWeight: FontWeight.w500,
-      ),
-    );
-  }
-
-  InputDecoration _buildInputDecoration(String hint) {
-    return InputDecoration(
-      hintText: hint,
-      hintStyle: AppTextTheme.bodyTextStyle.copyWith(
-        color: AppColor.lightTextTertiaryColor,
-      ),
-      fillColor: AppColor.lightSurfaceColor,
-      filled: true,
-      contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8.r),
-        borderSide: BorderSide(color: AppColor.primaryColor.withOpacity(0.1)),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8.r),
-        borderSide: BorderSide(color: AppColor.primaryColor.withOpacity(0.1)),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8.r),
-        borderSide: const BorderSide(color: AppColor.primaryColor),
-      ),
     );
   }
 }

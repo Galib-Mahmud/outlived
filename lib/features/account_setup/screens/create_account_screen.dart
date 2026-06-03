@@ -17,7 +17,7 @@ class CreateAccountScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AccountSetupAppbar(
-          title: 'Create Content Account',
+        title: 'Create Content Account',
         actionText: 'Skip',
         onActionTap: controller.completeSetup,
       ),
@@ -36,21 +36,20 @@ class CreateAccountScreen extends StatelessWidget {
                   color: AppColor.lightSurfaceColor,
                   borderRadius: BorderRadius.circular(8.r),
                 ),
-                child: Row(
+                child: Obx(() => Row(
                   children: [
                     TabBtn(
-                      index: 0,
+                      isActive: controller.selectedTab.value == 0,
+                      onTap: () => controller.selectedTab.value = 0,
                       text: 'Facebook',
-                      createAccountController: controller,
                     ),
                     TabBtn(
-                      index: 1,
+                      isActive: controller.selectedTab.value == 1,
+                      onTap: () => controller.selectedTab.value = 1,
                       text: 'Instagram',
-                      createAccountController: controller,
                     ),
-
                   ],
-                )
+                )),
               ),
             ),
 
@@ -59,7 +58,7 @@ class CreateAccountScreen extends StatelessWidget {
             // Responsive Step List Content View
             Expanded(
               child: Obx(() => AnimatedCrossFade(
-                duration: const Duration(milliseconds: 30),
+                duration: const Duration(milliseconds: 300),
                 crossFadeState: controller.selectedTab.value == 0
                     ? CrossFadeState.showFirst
                     : CrossFadeState.showSecond,
@@ -69,15 +68,13 @@ class CreateAccountScreen extends StatelessWidget {
             ),
 
             // Bottom Fixed Navigation Action Button
-            Obx(
-                ()=>Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
-                  child: ActionButton(
-                    text: controller.selectedTab.value == 0 ? 'Connect Facebook' : 'Connect Instagram',
-                    onPressed: controller.completeSetup,
-                  ),
-                )
-            )
+            Obx(() => Padding(
+              padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
+              child: ActionButton(
+                text: controller.selectedTab.value == 0 ? 'Connect Facebook' : 'Connect Instagram',
+                onPressed: controller.completeSetup,
+              ),
+            ))
           ],
         ),
       ),
