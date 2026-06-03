@@ -148,11 +148,10 @@ class ProfileUpdateScreen extends StatelessWidget {
                     SizedBox(height: 32.h),
 
                     // Save Action Button
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 4.w),
-                      child: ActionButton(
-                        text: 'Save Changes',
-                      )
+                    ActionButton(
+                      text: 'Save Changes',
+                      onPressed: () {
+                      },
                     ),
                     SizedBox(height: 24.h),
                   ],

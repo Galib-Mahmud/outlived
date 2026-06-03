@@ -133,6 +133,9 @@ class ChnagePasswordScreen extends StatelessWidget {
               // Confirm CTA Button
               ActionButton(
                 text: 'Confirm',
+                onPressed: (){
+
+                },
               )
             ],
           ),

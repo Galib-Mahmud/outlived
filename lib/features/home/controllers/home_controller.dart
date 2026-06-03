@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:outlive/features/notification/screens/notification_screen.dart';
 
 class MemoryPost {
   final String author;
@@ -71,7 +72,7 @@ class HomeController extends GetxController {
     ImpactMetric(value: "12", label: "Ongoing Deeds Running", isGreenIcon: true),
   ];
 
-  void handleNotificationTap() => Get.toNamed('/notifications');
+  void handleNotificationTap() => Get.to(NotificationScreen());
   void handleProfileTap() => Get.toNamed('/profile');
   void handleCreateNewDeed() => Get.toNamed('/create-deed');
 }

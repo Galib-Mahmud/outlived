@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:outlive/features/contacts/screens/contacts_screen.dart';
 import 'package:outlive/features/home/screens/home_screen.dart';
+import 'package:outlive/features/legacy/screens/legacy_screen.dart';
 import 'package:outlive/features/profile/screens/profile_screen.dart';
 
 class BottomNavController extends GetxController {
@@ -11,10 +13,11 @@ class BottomNavController extends GetxController {
     selectedIndex.value = index;
   }
 
+
   final List<Widget> tab = [
     HomeScreen(),
-    Center(child: Text('Legacy Screen')),
-    Center(child: Text('Contacts Screen')),
+    LegacyScreen(),
+    ContactsScreen(),
     ProfileScreen()
   ];
 

@@ -5,6 +5,7 @@ import 'package:outlive/core/theme/app_theme.dart';
 import 'package:outlive/core/theme/text_theme.dart';
 import 'package:outlive/features/account_setup/screens/social_setup_screen.dart';
 import 'package:outlive/features/home/screens/home_screen.dart';
+import 'package:outlive/features/landing/screens/landing_screen.dart';
 import '../../../core/theme/app_color.dart';
 import '../../../core/universal_widgets/action_button.dart';
 import '../../account_setup/screens/create_account_screen.dart';
@@ -173,7 +174,7 @@ class LoginScreen extends StatelessWidget {
         ActionButton(
           text: 'Login',
           onPressed: () {
-            Get.to(HomeScreen());
+            Get.to(LandingScreen());
           },
         )
       ],

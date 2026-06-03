@@ -52,7 +52,6 @@ class HomeScreen extends StatelessWidget {
                   ),
                   Row(
                     children: [
-                      // Notification Bell icon container
                       GestureDetector(
                         onTap: controller.handleNotificationTap,
                         child: Container(

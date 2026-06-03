@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
         return GetMaterialApp(
           title: 'OutLive',
           theme: AppTheme().darkTheme,
-          home: LandingScreen()
+          home: WelcomeScreen()
         );
       },
     );
