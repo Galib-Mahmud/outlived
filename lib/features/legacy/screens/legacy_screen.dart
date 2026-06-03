@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:outlive/core/theme/text_theme.dart';
 import 'package:outlive/core/universal_widgets/round_action_btn.dart';
+import 'package:outlive/features/legacy/screens/post_detail_screen.dart';
 import 'package:outlive/features/legacy/screens/social_post_screen.dart';
 import '../../../core/theme/app_color.dart';
 import '../controllers/legacy_controller.dart';
@@ -133,73 +134,78 @@ class LegacyScreen extends StatelessWidget {
                         ],
 
                         // Card Module Layout Item
-                        Container(
-                          margin: EdgeInsets.only(bottom: 16.h),
-                          padding: EdgeInsets.all(16.r),
-                          decoration: BoxDecoration(
-                            color: AppColor.lightSurfaceColor,
-                            borderRadius: BorderRadius.circular(16.r),
-                            border: Border.all(color: AppColor.lightTextTertiaryColor.withOpacity(0.04)),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Top Info Row (WhatsApp Icon indicator & Target Time)
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Icon(Icons.phone_android_rounded, color: const Color(0xFF25D366), size: 22.sp),
-                                  Text(
-                                    item.timeText,
-                                    style: AppTextTheme.bodyTextStyle.copyWith(
-                                      color: AppColor.secondaryColor,
-                                      fontSize: 12.sp,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
-                              ),
-
-                              SizedBox(height: 16.h),
-
-                              // Main Message Content Area
-                              Text(
-                                item.content,
-                                style: AppTextTheme.bodyTextStyle.copyWith(
-                                  color: AppColor.lightTextColor.withOpacity(0.7),
-                                  fontSize: 12.sp,
-                                  height: 1.45,
-                                ),
-                              ),
-
-                              SizedBox(height: 16.h),
-
-                              // Footer Action Button Badges Group Row
-                              Row(
-                                children: [
-                                  _buildFooterChip(item.recipients),
-                                  SizedBox(width: 8.w),
-                                  _buildFooterChip(item.scheduleType),
-                                  SizedBox(width: 8.w),
-                                  if (controller.selectedTab.value == 1)
-                                    GestureDetector(
-                                      onTap: () => controller.deleteMessage(item.id),
-                                      child: Container(
-                                        padding: EdgeInsets.all(8.r),
-                                        decoration: BoxDecoration(
-                                          color: Colors.red.withOpacity(0.1),
-                                          borderRadius: BorderRadius.circular(6.r),
-                                        ),
-                                        child: Icon(
-                                          Icons.delete_outline_rounded,
-                                          color: const Color(0xFFD32F2F),
-                                          size: 16.sp,
-                                        ),
+                        InkWell(
+                          onTap: () {
+                            Get.to(PostDetailScreen());
+                          },
+                          child: Container(
+                            margin: EdgeInsets.only(bottom: 16.h),
+                            padding: EdgeInsets.all(16.r),
+                            decoration: BoxDecoration(
+                              color: AppColor.lightSurfaceColor,
+                              borderRadius: BorderRadius.circular(16.r),
+                              border: Border.all(color: AppColor.lightTextTertiaryColor.withOpacity(0.04)),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Top Info Row (WhatsApp Icon indicator & Target Time)
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Icon(Icons.phone_android_rounded, color: const Color(0xFF25D366), size: 22.sp),
+                                    Text(
+                                      item.timeText,
+                                      style: AppTextTheme.bodyTextStyle.copyWith(
+                                        color: AppColor.secondaryColor,
+                                        fontSize: 12.sp,
+                                        fontWeight: FontWeight.w500,
                                       ),
                                     ),
-                                ],
-                              ),
-                            ],
+                                  ],
+                                ),
+
+                                SizedBox(height: 16.h),
+
+                                // Main Message Content Area
+                                Text(
+                                  item.content,
+                                  style: AppTextTheme.bodyTextStyle.copyWith(
+                                    color: AppColor.lightTextColor.withOpacity(0.7),
+                                    fontSize: 12.sp,
+                                    height: 1.45,
+                                  ),
+                                ),
+
+                                SizedBox(height: 16.h),
+
+                                // Footer Action Button Badges Group Row
+                                Row(
+                                  children: [
+                                    _buildFooterChip(item.recipients),
+                                    SizedBox(width: 8.w),
+                                    _buildFooterChip(item.scheduleType),
+                                    SizedBox(width: 8.w),
+                                    if (controller.selectedTab.value == 1)
+                                      GestureDetector(
+                                        onTap: () => controller.deleteMessage(item.id),
+                                        child: Container(
+                                          padding: EdgeInsets.all(8.r),
+                                          decoration: BoxDecoration(
+                                            color: Colors.red.withOpacity(0.1),
+                                            borderRadius: BorderRadius.circular(6.r),
+                                          ),
+                                          child: Icon(
+                                            Icons.delete_outline_rounded,
+                                            color: const Color(0xFFD32F2F),
+                                            size: 16.sp,
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ],
