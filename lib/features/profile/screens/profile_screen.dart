@@ -1,7 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:outlive/core/theme/app_theme.dart';
 import 'package:outlive/core/theme/text_theme.dart';
 import 'package:outlive/features/profile/screens/change_password_screen.dart';
 import 'package:outlive/features/profile/screens/privacy_policy_screen.dart';
@@ -18,6 +18,31 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+        title: Text(
+          'Profile',
+          style: AppTextTheme.bodyTextStyle.copyWith(
+              color: AppColor.lightTextColor,
+              fontSize: 16.sp,
+              fontWeight: FontWeight.w600
+          ),
+        ),
+        automaticallyImplyLeading: false,
+        actions: [
+          Container(
+            margin: EdgeInsets.all(8.r),
+            decoration: BoxDecoration(
+                color: AppColor.lightSurfaceColor,
+                shape: BoxShape.circle
+            ),
+            child: IconButton(
+              onPressed: (){},
+              icon: Icon(CupertinoIcons.bell, color: AppColor.lightTextSecondaryColor, size: 18.sp),
+            ),
+          ),
+        ],
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),

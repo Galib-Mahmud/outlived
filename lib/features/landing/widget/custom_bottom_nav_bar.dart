@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:outlive/core/theme/app_color.dart';
 import '../controllers/bottom_nav_controller.dart';
 import 'package:outlive/core/theme/text_theme.dart';
 
@@ -45,16 +46,16 @@ class CustomBottomNavStack extends StatelessWidget {
                     _buildLeftRightTabItem(
                       controller,
                       index: 0,
-                      icon: Icons.home_outlined,
-                      activeIcon: Icons.home_rounded,
+                      icon: 'assets/icons/home.png',
+                      activeIcon: 'assets/icons/home_active.png',
                       label: 'Home',
                     ),
                     SizedBox(width: 24.w),
                     _buildLeftRightTabItem(
                       controller,
                       index: 1,
-                      icon: Icons.calendar_today_outlined,
-                      activeIcon: Icons.calendar_today_rounded,
+                      icon: 'assets/icons/legacy.png',
+                      activeIcon: 'assets/icons/legacy_active.png',
                       label: 'Legacy',
                     ),
                   ],
@@ -69,16 +70,16 @@ class CustomBottomNavStack extends StatelessWidget {
                     _buildLeftRightTabItem(
                       controller,
                       index: 2,
-                      icon: Icons.import_contacts_outlined,
-                      activeIcon: Icons.import_contacts_rounded,
+                      icon: 'assets/icons/contact.png',
+                      activeIcon: 'assets/icons/contact_active.png',
                       label: 'Contacts',
                     ),
                     SizedBox(width: 24.w),
                     _buildLeftRightTabItem(
                       controller,
                       index: 3,
-                      icon: Icons.person_outline_rounded,
-                      activeIcon: Icons.person_rounded,
+                      icon: 'assets/icons/profile.png',
+                      activeIcon: 'assets/icons/profile_active.png',
                       label: 'Profile',
                     ),
                   ],
@@ -89,18 +90,18 @@ class CustomBottomNavStack extends StatelessWidget {
 
           // 2. Floated Center Action Button (Positioned vertically offset outside parent)
           Positioned(
-            top: 0, // Pushes absolute component vertically to top boundary, floating out of background frame box
+            top: 10, // Pushes absolute component vertically to top boundary, floating out of background frame box
             child: GestureDetector(
               onTap: controller.onFabPressed,
               child: Container(
-                width: 68.w,
-                height: 68.h,
+                width: 60.w,
+                height: 60.h,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF2E5A36), // Balanced specific baseline template green tone matching visual design
+                  color: AppColor.primaryColor,
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF2E5A36).withOpacity(0.25),
+                      color: AppColor.primaryColor.withOpacity(0.25),
                       blurRadius: 12.r,
                       offset: const Offset(0, 6),
                     ),
@@ -123,8 +124,8 @@ class CustomBottomNavStack extends StatelessWidget {
   Widget _buildLeftRightTabItem(
       BottomNavController controller, {
         required int index,
-        required IconData icon,
-        required IconData activeIcon,
+        required String icon,
+        required String activeIcon,
         required String label,
       }) {
     final isSelected = controller.selectedIndex.value == index;
@@ -147,11 +148,11 @@ class CustomBottomNavStack extends StatelessWidget {
                 color: isSelected ? const Color(0xFFF4F4F4) : Colors.transparent, // Squircle block structure active template background tracking
                 borderRadius: BorderRadius.circular(16.r),
               ),
-              child: Icon(
+              child: Image.asset(
                 isSelected ? activeIcon : icon,
-                color: isSelected ? Colors.black : Colors.grey.shade400,
-                size: 24.sp,
-              ),
+                width: 24.w,
+                height: 24.h,
+              )
             ),
             SizedBox(height: 2.h),
             Text(

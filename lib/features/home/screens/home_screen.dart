@@ -13,9 +13,6 @@ class HomeScreen extends StatelessWidget {
     final controller = Get.put(HomeController());
 
     return Scaffold(
-      backgroundColor: const Color(
-        0xFFF6F6F6,
-      ), // Light grayish background matching the canvas
       body: SafeArea(
         child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
@@ -147,10 +144,9 @@ class HomeScreen extends StatelessWidget {
                         padding: EdgeInsets.all(8.r),
                         decoration: const BoxDecoration(
                           shape: BoxShape.circle,
-                          gradient: LinearGradient(
-                            colors: [Color(0xFFFFA726), Color(0xFF5E35B1)],
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
+                          image: DecorationImage(
+                            image: AssetImage('assets/images/sun_status_bg.png'),
+                            fit: BoxFit.contain,
                           ),
                         ),
                         child: Center(
@@ -213,8 +209,9 @@ class HomeScreen extends StatelessWidget {
                 width: double.infinity,
                 padding: EdgeInsets.all(16.r),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFEFEFEF),
+                  color: AppColor.lightSurfaceColor,
                   borderRadius: BorderRadius.circular(20.r),
+                    border: Border.all(color: AppColor.lightBoarderColor, width: 1.r)
                 ),
                 child: Column(
                   children: [
@@ -259,13 +256,14 @@ class HomeScreen extends StatelessWidget {
                             vertical: 6.h,
                           ),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFD4E8D9),
+                            color: AppColor.primaryColor.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(12.r),
+                            border: Border.all(color: AppColor.primaryColor.withOpacity(0.2), width: 1.r)
                           ),
                           child: Text(
                             '• ${controller.memoryPost.tag}',
                             style: TextStyle(
-                              color: AppColor.secondaryColor,
+                              color: AppColor.primaryColor.withOpacity(0.7),
                               fontSize: 11.sp,
                               fontWeight: FontWeight.w700,
                             ),
@@ -282,8 +280,9 @@ class HomeScreen extends StatelessWidget {
                         bottom: 14.h,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFF5F5F5),
+                        color: AppColor.lightBackgroundColor,
                         borderRadius: BorderRadius.circular(14.r),
+                        border: Border.all(color: AppColor.lightBoarderColor, width: 1.r)
                       ),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -294,8 +293,8 @@ class HomeScreen extends StatelessWidget {
                             decoration: BoxDecoration(
                               color: AppColor.primaryColor,
                               borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(14.r),
-                                bottomLeft: Radius.circular(14.r),
+                                topRight: Radius.circular(14.r),
+                                bottomRight: Radius.circular(14.r),
                               )
                             ),
                           ),
@@ -330,8 +329,7 @@ class HomeScreen extends StatelessWidget {
                     child: Text(
                       'Create Now',
                       style: TextStyle(
-                        fontSize: 13.sp,
-                        fontWeight: FontWeight.w600,
+                        fontSize: 12.sp,
                         color: AppColor.secondaryColor
                       ),
                     ),
@@ -354,8 +352,9 @@ class HomeScreen extends StatelessWidget {
                       width: 165.w,
                       padding: EdgeInsets.all(14.r),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFEFEFEF),
+                        color: AppColor.lightSurfaceColor,
                         borderRadius: BorderRadius.circular(18.r),
+                          border: Border.all(color: AppColor.lightBoarderColor, width: 1.r)
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -407,7 +406,7 @@ class HomeScreen extends StatelessWidget {
                               vertical: 4.h,
                             ),
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: AppColor.lightBackgroundColor,
                               borderRadius: BorderRadius.circular(8.r),
                             ),
                             child: Text(
@@ -448,7 +447,8 @@ class HomeScreen extends StatelessWidget {
                   return Container(
                     padding: EdgeInsets.all(14.r),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFEFEFEF),
+                      color: AppColor.lightSurfaceColor,
+                       border: Border.all(color: AppColor.lightBoarderColor, width: 1.r),
                       borderRadius: BorderRadius.circular(18.r),
                     ),
                     child: Column(
@@ -509,7 +509,8 @@ class HomeScreen extends StatelessWidget {
                 width: double.infinity,
                 padding: EdgeInsets.all(16.r),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFEFEFEF),
+                  color: AppColor.lightSurfaceColor,
+                  border: Border.all(color: AppColor.lightBoarderColor, width: 1.r),
                   borderRadius: BorderRadius.circular(20.r),
                 ),
                 child: Column(
@@ -525,7 +526,8 @@ class HomeScreen extends StatelessWidget {
                         bottom: 14.h,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFF5F5F5),
+                        color: AppColor.lightBackgroundColor,
+                        border: Border.all(color: AppColor.lightBoarderColor, width: 1.r),
                         borderRadius: BorderRadius.circular(12.r),
                       ),
                       child: Row(
