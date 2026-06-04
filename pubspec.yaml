@@ -38,6 +38,10 @@ dependencies:
   get: ^4.7.3
   gradient_borders: ^1.0.4
 
+  permission_handler: ^12.0.3
+  flutter_native_contact_picker: ^0.0.12
+
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_native_contact_picker/flutter_native_contact_picker.dart';
+import 'package:flutter_native_contact_picker/model/contact.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:outlive/core/theme/text_theme.dart';
@@ -14,11 +16,24 @@ class CreateContactController extends GetxController {
   // Radio option tracker string ('Muslim', 'Invite To Islam', or 'Memory')
   var selectedCategory = 'Muslim'.obs;
 
+
+
   @override
   void onClose() {
     nameController.dispose();
     numberController.dispose();
     super.onClose();
+  }
+
+  Future<void> getContact() async {
+    final FlutterNativeContactPicker _contactPicker = FlutterNativeContactPicker();
+    Contact? contact = await _contactPicker.selectContact();
+
+    if (contact != null) {
+      nameController.text = contact.fullName ?? '';
+      numberController.text = contact.phoneNumbers?.isNotEmpty == true ? contact.phoneNumbers!.first : '';
+    }
+
   }
 }
 
@@ -75,7 +90,8 @@ class CreateContactScreen extends StatelessWidget {
                     TextFormField(
                       controller: controller.nameController,
                       style: AppTextTheme.bodyTextStyle.copyWith(color: AppColor.lightTextColor),
-                      decoration: _buildInputDecoration('Enter Name', Icons.contact_page_outlined),
+                      decoration: _buildInputDecoration('Enter Name', controller.getContact),
+
                     ),
 
                     SizedBox(height: 24.h),
@@ -87,7 +103,7 @@ class CreateContactScreen extends StatelessWidget {
                       controller: controller.numberController,
                       keyboardType: TextInputType.phone,
                       style: AppTextTheme.bodyTextStyle.copyWith(color: AppColor.lightTextColor),
-                      decoration: _buildInputDecoration('Enter Number', Icons.contact_page_outlined),
+                      decoration: _buildInputDecoration('Enter Number', controller.getContact),
                     ),
 
                     SizedBox(height: 24.h),
@@ -139,7 +155,7 @@ class CreateContactScreen extends StatelessWidget {
     );
   }
 
-  InputDecoration _buildInputDecoration(String hint, IconData suffixIcon) {
+  InputDecoration _buildInputDecoration(String hint, void Function()? onContactTap) {
     return InputDecoration(
       hintText: hint,
       hintStyle: AppTextTheme.bodyTextStyle.copyWith(
@@ -148,7 +164,15 @@ class CreateContactScreen extends StatelessWidget {
       ),
       fillColor: AppColor.lightSurfaceColor,
       filled: true,
-      suffixIcon: Icon(suffixIcon, color: AppColor.lightTextTertiaryColor.withOpacity(0.7), size: 20.sp),
+      suffixIcon: InkWell(
+        onTap: onContactTap,
+        child: Image.asset(
+          'assets/icons/contact.png',
+          width: 20.r,
+          height: 20.r,
+          color: AppColor.lightTextTertiaryColor,
+        ),
+      ),
       contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8.r),
