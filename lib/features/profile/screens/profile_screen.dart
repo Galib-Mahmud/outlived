@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:outlive/core/theme/text_theme.dart';
+import 'package:outlive/features/account_setup/screens/create_account_screen.dart';
 import 'package:outlive/features/profile/screens/change_password_screen.dart';
 import 'package:outlive/features/profile/screens/privacy_policy_screen.dart';
 import 'package:outlive/features/profile/screens/profile_update_screen.dart';
@@ -124,7 +125,9 @@ class ProfileScreen extends StatelessWidget {
                   SizedBox(height: 12.h),
                   _buildMenuRow(
                     label: 'Create Content Account',
-                    onTap: () => Get.toNamed('/create-content'),
+                    onTap: () => Get.to(CreateAccountScreen(
+                      isFromSettings: true,
+                    )),
                   ),
                 ],
               ),

@@ -53,12 +53,6 @@ class SocialConnectRow extends StatelessWidget {
                   color: iconColor ?? AppColor.primaryColor,
                   size: 24.sp,
                 ),
-              SizedBox(width: 4.w),
-              Icon(
-                Icons.arrow_drop_down_rounded,
-                color: AppColor.lightTextTertiaryColor,
-                size: 20.sp,
-              ),
             ],
           ),
         ),

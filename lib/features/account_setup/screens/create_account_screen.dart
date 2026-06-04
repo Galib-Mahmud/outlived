@@ -9,7 +9,11 @@ import '../controllers/create_account_controller.dart';
 import '../widgets/account_setup_appbar.dart';
 
 class CreateAccountScreen extends StatelessWidget {
-  const CreateAccountScreen({super.key});
+  bool isFromSettings;
+  CreateAccountScreen({
+    this.isFromSettings = false,
+    super.key
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -18,8 +22,8 @@ class CreateAccountScreen extends StatelessWidget {
     return Scaffold(
       appBar: AccountSetupAppbar(
         title: 'Create Content Account',
-        actionText: 'Skip',
-        onActionTap: controller.completeSetup,
+        actionText: isFromSettings ? '' : 'Skip',
+        onActionTap: isFromSettings ? null : controller.completeSetup,
       ),
       body: SafeArea(
         child: Column(
@@ -68,7 +72,7 @@ class CreateAccountScreen extends StatelessWidget {
             ),
 
             // Bottom Fixed Navigation Action Button
-            Obx(() => Padding(
+            isFromSettings ? SizedBox(height: 16.h) : Obx(() => Padding(
               padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
               child: ActionButton(
                 text: controller.selectedTab.value == 0 ? 'Connect Facebook' : 'Connect Instagram',

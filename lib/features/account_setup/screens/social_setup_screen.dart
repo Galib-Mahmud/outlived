@@ -40,9 +40,10 @@ class SocialSetupScreen extends StatelessWidget {
                       onTap: controller.connectFacebook,
                     )),
 
+
                     SizedBox(height: 16.h),
 
-                    // --- Instagram Row ---
+                    // --- WhatsApp Input Row ---
                     Obx(() => SocialConnectRow(
                       iconPath: 'assets/icons/instagram.png',
                       buttonText: controller.isInstagramConnected.value ? 'Connected' : 'Connect',
@@ -50,36 +51,16 @@ class SocialSetupScreen extends StatelessWidget {
                       onTap: controller.connectInstagram,
                     )),
 
+
                     SizedBox(height: 16.h),
 
-                    // --- WhatsApp Input Row ---
-                    Row(
-                      children: [
-                        _buildSocialIconBox('assets/icons/whatsapp.png'),
-                        SizedBox(width: 12.w),
-                        Expanded(
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: CustomTextField(
-                                  controller: controller.whatsappController,
-                                  hintText: 'Enter WhatsApp number',
-                                  keyboardType: TextInputType.phone,
-                                  contentPadding: EdgeInsets.symmetric(horizontal: 14.w),
-                                ),
-                              ),
-                              SizedBox(width: 8.w),
-                              Obx(() => SmallActionButton(
-                                text: controller.isWhatsAppConnected.value ? 'Connected' : 'Connect',
-                                isConnected: controller.isWhatsAppConnected.value,
-                                onTap: controller.connectWhatsApp,
-                                width: 90.w,
-                              )),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
+                    // --- Instagram Row ---
+                    Obx(() => SocialConnectRow(
+                      iconPath: 'assets/icons/whatsapp.png',
+                      buttonText: controller.isInstagramConnected.value ? 'Connected' : 'Connect',
+                      isConnected: controller.isInstagramConnected.value,
+                      onTap: controller.connectInstagram,
+                    )),
                   ],
                 ),
               ),

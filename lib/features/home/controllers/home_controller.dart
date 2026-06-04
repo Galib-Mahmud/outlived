@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:outlive/features/legacy/screens/social_post_screen.dart';
 import 'package:outlive/features/notification/screens/notification_screen.dart';
 
 class MemoryPost {
@@ -74,5 +75,5 @@ class HomeController extends GetxController {
 
   void handleNotificationTap() => Get.to(NotificationScreen());
   void handleProfileTap() => Get.toNamed('/profile');
-  void handleCreateNewDeed() => Get.toNamed('/create-deed');
+  void handleCreateNewDeed() => Get.to(SocialPostScreen());
 }

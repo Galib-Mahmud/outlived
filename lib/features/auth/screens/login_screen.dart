@@ -200,7 +200,7 @@ class LoginScreen extends StatelessWidget {
         SizedBox(height: 32.h),
         ActionButton(
           text: 'Sign Up',
-          onPressed: () => Get.to(() => const CreateAccountScreen()),
+          onPressed: () => Get.to(() => CreateAccountScreen()),
         ),
         SizedBox(height: 16.h),
         Text(

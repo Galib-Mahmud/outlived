@@ -37,7 +37,7 @@ class OnboardingQuestionScreen extends StatelessWidget {
                   onboardingQuestionController.questions[onboardingQuestionController.currentQuestionIndex.value],
                   textAlign: TextAlign.center,
                   style: AppTextTheme.titleTextStyle.copyWith(
-                    fontSize: 32.sp,
+                    fontSize: 30.sp,
                     height: 1.3,
                   ),
                 ),

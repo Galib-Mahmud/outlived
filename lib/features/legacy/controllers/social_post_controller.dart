@@ -16,7 +16,7 @@ class SocialPostController extends GetxController {
   var selectedRewardInterval = 'Daily'.obs;
 
   final List<String> categories = ['Islamic', 'General', 'Reminders'];
-  final List<String> platforms = ['Facebook', 'Instagram', 'WhatsApp'];
+  final List<String> platforms = ['Facebook', 'Instagram'];
 
   Future<void> pickDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(

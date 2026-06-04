@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:outlive/core/theme/app_color.dart';
+import 'package:outlive/features/legacy/screens/post_detail_screen.dart';
 import '../../../core/theme/text_theme.dart';
 import '../controllers/home_controller.dart';
 
@@ -348,77 +349,80 @@ class HomeScreen extends StatelessWidget {
                   separatorBuilder: (_, __) => SizedBox(width: 14.w),
                   itemBuilder: (context, index) {
                     final deed = controller.goodDeedPosts[index];
-                    return Container(
-                      width: 165.w,
-                      padding: EdgeInsets.all(14.r),
-                      decoration: BoxDecoration(
-                        color: AppColor.lightSurfaceColor,
-                        borderRadius: BorderRadius.circular(18.r),
-                          border: Border.all(color: AppColor.lightBoarderColor, width: 1.r)
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Image.asset(
-                                'assets/icons/deed_icon.png',
-                                width: 24.w,
-                                height: 24.h,
-                                fit: BoxFit.cover,
+                    return InkWell(
+                      onTap: () => Get.to(PostDetailScreen()),
+                      child: Container(
+                        width: 165.w,
+                        padding: EdgeInsets.all(14.r),
+                        decoration: BoxDecoration(
+                          color: AppColor.lightSurfaceColor,
+                          borderRadius: BorderRadius.circular(18.r),
+                            border: Border.all(color: AppColor.lightBoarderColor, width: 1.r)
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Image.asset(
+                                  'assets/icons/deed_icon.png',
+                                  width: 24.w,
+                                  height: 24.h,
+                                  fit: BoxFit.cover,
+                                ),
+                                Text(
+                                  deed.timestamp,
+                                  style: TextStyle(
+                                    color: const Color(0xFF9E9E9E),
+                                    fontSize: 10.sp,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  deed.title,
+                                  style: TextStyle(
+                                    fontSize: 14.sp,
+                                    fontWeight: FontWeight.w700,
+                                    color: const Color(0xFF1A1A1A),
+                                    height: 1.2.h,
+                                  ),
+                                ),
+                                SizedBox(height: 2.h),
+                                Text(
+                                  deed.snippet,
+                                  style: TextStyle(
+                                    fontSize: 11.sp,
+                                    color: const Color(0xFF9E9E9E),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 10.w,
+                                vertical: 4.h,
                               ),
-                              Text(
-                                deed.timestamp,
+                              decoration: BoxDecoration(
+                                color: AppColor.lightBackgroundColor,
+                                borderRadius: BorderRadius.circular(8.r),
+                              ),
+                              child: Text(
+                                deed.platform,
                                 style: TextStyle(
-                                  color: const Color(0xFF9E9E9E),
+                                  color: const Color(0xFF555555),
                                   fontSize: 10.sp,
+                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
-                            ],
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                deed.title,
-                                style: TextStyle(
-                                  fontSize: 14.sp,
-                                  fontWeight: FontWeight.w700,
-                                  color: const Color(0xFF1A1A1A),
-                                  height: 1.2.h,
-                                ),
-                              ),
-                              SizedBox(height: 2.h),
-                              Text(
-                                deed.snippet,
-                                style: TextStyle(
-                                  fontSize: 11.sp,
-                                  color: const Color(0xFF9E9E9E),
-                                ),
-                              ),
-                            ],
-                          ),
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 10.w,
-                              vertical: 4.h,
                             ),
-                            decoration: BoxDecoration(
-                              color: AppColor.lightBackgroundColor,
-                              borderRadius: BorderRadius.circular(8.r),
-                            ),
-                            child: Text(
-                              deed.platform,
-                              style: TextStyle(
-                                color: const Color(0xFF555555),
-                                fontSize: 10.sp,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     );
                   },
