@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:outlive/core/theme/text_theme.dart';
 import 'package:outlive/core/universal_widgets/round_action_btn.dart';
+import 'package:outlive/features/contacts/screens/contact_selection_screen.dart';
 import '../../../core/theme/app_color.dart';
 import '../controllers/create_reminder_controller.dart';
 
@@ -89,7 +90,7 @@ class CreateReminderScreen extends StatelessWidget {
                     TextFormField(
                       controller: controller.benefitCircleController,
                       style: AppTextTheme.bodyTextStyle.copyWith(color: AppColor.lightTextColor),
-                      decoration: _buildInputDecoration('Enter Name', Icons.contact_page_outlined),
+                      decoration: _buildInputDecoration('Enter Name', 'assets/icons/contact.png'),
                     ),
 
                     SizedBox(height: 20.h),
@@ -186,7 +187,7 @@ class CreateReminderScreen extends StatelessWidget {
     );
   }
 
-  InputDecoration _buildInputDecoration(String hint, IconData? suffixIcon) {
+  InputDecoration _buildInputDecoration(String hint, String? suffixIcon) {
     return InputDecoration(
       hintText: hint,
       hintStyle: AppTextTheme.bodyTextStyle.copyWith(
@@ -196,7 +197,16 @@ class CreateReminderScreen extends StatelessWidget {
       fillColor: AppColor.lightSurfaceColor,
       filled: true,
       suffixIcon: suffixIcon != null
-          ? Icon(suffixIcon, color: AppColor.lightTextTertiaryColor.withOpacity(0.6), size: 18.sp)
+          ? InkWell(
+        onTap: () {
+          Get.to(ContactSelectionScreen());
+        },
+        child: Image.asset(
+          suffixIcon,
+          width: 16.w,
+          height: 16.h,
+        ),
+      )
           : null,
       contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
       border: OutlineInputBorder(
