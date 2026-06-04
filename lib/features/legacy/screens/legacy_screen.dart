@@ -17,31 +17,6 @@ class LegacyScreen extends StatelessWidget {
     final controller = Get.put(LegacyController());
 
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        title: Text(
-          'Legacy',
-          style: AppTextTheme.bodyTextStyle.copyWith(
-              color: AppColor.lightTextColor,
-              fontSize: 16.sp,
-              fontWeight: FontWeight.w600
-          ),
-        ),
-        automaticallyImplyLeading: false,
-        actions: [
-          Container(
-            margin: EdgeInsets.all(8.r),
-            decoration: BoxDecoration(
-                color: AppColor.lightSurfaceColor,
-                shape: BoxShape.circle
-            ),
-            child: IconButton(
-              onPressed: (){},
-              icon: Icon(CupertinoIcons.bell, color: AppColor.lightTextSecondaryColor, size: 18.sp),
-            ),
-          ),
-        ],
-      ),
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

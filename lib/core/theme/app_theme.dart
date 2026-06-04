@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:outlive/core/theme/app_color.dart';
+import 'package:outlive/core/theme/text_theme.dart';
 
 enum FontFamily {
   sfprodisplay,
@@ -28,13 +29,12 @@ class AppTheme {
     appBarTheme: AppBarTheme(
       color: AppColor.lightBackgroundColor,
       elevation: 0,
-      iconTheme: IconThemeData(color: Colors.white),
-      titleTextStyle: TextStyle(
-          color: Colors.white,
-          fontSize: 16.sp,
-          fontWeight: FontWeight.w500,
-          fontFamily: FontFamily.sfprodisplay.name
-      ),
+      iconTheme: IconThemeData(color: AppColor.lightTextColor),
+      titleTextStyle: AppTextTheme.bodyTextStyle.copyWith(
+        color: AppColor.lightTextColor,
+        fontSize: 16.sp,
+        fontWeight: FontWeight.bold
+      )
     ),
   );
 
