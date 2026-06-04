@@ -18,7 +18,7 @@ class CreateReminderScreen extends StatelessWidget {
       appBar: AppBar(
         elevation: 0,
         title: Text(
-          "FAQ's",
+          "Create Ongoing Reminder",
           style: AppTextTheme.titleTextStyle.copyWith(
             color: AppColor.lightTextColor,
             fontSize: 16.sp,
