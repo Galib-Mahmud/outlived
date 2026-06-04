@@ -21,7 +21,7 @@ class ProfileScreen extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -164,8 +164,6 @@ class ProfileScreen extends StatelessWidget {
                   ),
                 ],
               ),
-
-              SizedBox(height: 40.h),
             ],
           ),
         ),
