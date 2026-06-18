@@ -118,7 +118,6 @@ class CreateContactScreen extends StatelessWidget {
                         children: [
                           _buildRadioOption('Muslim', controller),
                           _buildRadioOption('Invite To Islam', controller),
-                          _buildRadioOption('Memory', controller), // Matches "Memory" category label from reference
                         ],
                       ),
                     ),

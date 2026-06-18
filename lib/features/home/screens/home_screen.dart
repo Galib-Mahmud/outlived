@@ -259,16 +259,15 @@ class HomeScreen extends StatelessWidget {
               // Horizontal Good Deed List Row Block
               SizedBox(
                 height: 155.h,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: controller.goodDeedPosts.length,
-                  separatorBuilder: (_, __) => SizedBox(width: 14.w),
+                child: ListView.builder(
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: 1,
                   itemBuilder: (context, index) {
                     final deed = controller.goodDeedPosts[index];
                     return InkWell(
                       onTap: () => Get.to(PostDetailScreen()),
                       child: Container(
-                        width: 165.w,
+                        width: double.infinity,
                         padding: EdgeInsets.all(14.r),
                         decoration: BoxDecoration(
                           color: AppColor.lightSurfaceColor,
@@ -297,6 +296,7 @@ class HomeScreen extends StatelessWidget {
                                 ),
                               ],
                             ),
+                            SizedBox(height: 8.h),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -309,7 +309,7 @@ class HomeScreen extends StatelessWidget {
                                     height: 1.2.h,
                                   ),
                                 ),
-                                SizedBox(height: 2.h),
+                                SizedBox(height: 8.h),
                                 Text(
                                   deed.snippet,
                                   style: TextStyle(
@@ -319,6 +319,7 @@ class HomeScreen extends StatelessWidget {
                                 ),
                               ],
                             ),
+                            SizedBox(height: 10.h),
                             Container(
                               padding: EdgeInsets.symmetric(
                                 horizontal: 10.w,
@@ -345,7 +346,6 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
 
-              SizedBox(height: 24.h),
 
               // --- IMPACT GRID MEASUREMENT ROW ---
               label('Your Impact'),
@@ -378,15 +378,13 @@ class HomeScreen extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Icon(
-                              metric.isGreenIcon
-                                  ? Icons.check_circle_outline_rounded
-                                  : Icons.send_rounded,
-                              color: metric.isGreenIcon
-                                  ? const Color(0xFF00C853)
-                                  : const Color(0xFFAB47BC),
-                              size: 20.sp,
-                            ),
+                            if (metric.iconPath != null)
+                              Image.asset(
+                                metric.iconPath!,
+                                width: 16.w,
+                                height: 16.h,
+                                fit: BoxFit.cover,
+                              ),
                             Icon(
                               Icons.trending_up_rounded,
                               color: const Color(0xFF9E9E9E),

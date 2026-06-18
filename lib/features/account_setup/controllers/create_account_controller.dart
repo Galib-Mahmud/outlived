@@ -27,62 +27,58 @@ class CreateAccountController extends GetxController {
 
   // Pure data list for Facebook instructions
   final List<StepItem> facebookSteps = [
-    StepItem(stepNumber: 'Step 1', description: 'Open your Facebook profile'),
-    StepItem(stepNumber: 'Step 2', description: 'Tap Profile Menu (... / Options)'),
-    StepItem(stepNumber: 'Step 3', description: 'Select Turn On Professional Mode'),
-    StepItem(stepNumber: 'Step 4', description: 'Tap Turn On'),
+    StepItem(stepNumber: 'Step 1', description: 'Open Facebook.'),
+    StepItem(stepNumber: 'Step 2', description: 'Tap the Menu icon (☰).'),
+    StepItem(stepNumber: 'Step 3', description: 'Tap the dropdown arrow beside your account.'),
+    StepItem(stepNumber: 'Step 4', description: 'Select Create New Page.'),
     StepItem(
       stepNumber: 'Step 5',
-      titleSuffix: ' — Creator Category Setup',
-      subLabel: 'Select category:',
-      bulletPoints: ['Digital Creator', 'Blogger', 'Public Figure', 'Video Creator', 'Education', 'Religious Organization', 'Community'],
+      description: 'Enter a Page Name.'
     ),
     StepItem(
       stepNumber: 'Step 6',
-      titleSuffix: ' — Profile Setup',
-      subLabel: 'Fill:',
-      bulletPoints: ['Profile Photo', 'Cover Photo', 'Bio', 'Category', 'Website (Optional)'],
+      subLabel: 'Choose:',
+      bulletPoints: ['Education', ' Personal Blog'],
     ),
     StepItem(
       stepNumber: 'Step 7',
-      titleSuffix: ' — Audience Settings',
-      subLabel: 'Choose:',
-      bulletPoints: ['Public followers ON', 'Friend requests', 'Message settings'],
+      subLabel: 'Tap Create.',
     ),
     StepItem(
       stepNumber: 'Step 8',
-      titleSuffix: ' — Creator Tools',
-      subLabel: 'Enable:',
-      bulletPoints: ['Professional Dashboard', 'Insights', 'Content Monetization (If eligible)', 'Audience Analytics'],
+      subLabel: 'Select Creator as the Page Type.',
     ),
-    StepItem(stepNumber: 'Step 9', description: 'Finish → Start posting content'),
+
+    StepItem(
+      stepNumber: 'Step 9',
+      subLabel: 'Add a profile picture and customize your page.',
+    ),
+    StepItem(
+      stepNumber: 'Step 10',
+      subLabel: 'Invite friends if you wish.',
+    ),
+    StepItem(
+      stepNumber: 'Step 11',
+      subLabel: 'Choose whether to enable or disable notifications.',
+    ),
   ];
 
   // Pure data list for Instagram instructions
   final List<StepItem> instagramSteps = [
-    StepItem(stepNumber: 'Step 1', description: 'Open Instagram'),
-    StepItem(stepNumber: 'Step 2', description: 'Go to Profile'),
-    StepItem(stepNumber: 'Step 3', description: 'Tap ☰ Menu'),
-    StepItem(stepNumber: 'Step 4', subLabel: 'Open:\nSettings & Privacy'),
-    StepItem(stepNumber: 'Step 5', subLabel: 'Select:\nAccount Type & Tools / Account'),
-    StepItem(stepNumber: 'Step 6', subLabel: 'Tap:\nSwitch To Professional Account'),
-    StepItem(stepNumber: 'Step 7', subLabel: 'Choose:\nCreator (NOT Business)'),
+    StepItem(stepNumber: 'Step 1', description: 'Open Instagram.'),
+    StepItem(stepNumber: 'Step 2', description: 'Go to your Profile.'),
+    StepItem(stepNumber: 'Step 3', description: 'Edit Profile.'),
+    StepItem(stepNumber: 'Step 4', subLabel: 'Select Switch to Professional Account.'),
+
     StepItem(
-      stepNumber: 'Step 8',
-      subLabel: 'Examples:',
-      bulletPoints: ['Digital Creator', 'Influencer', 'Public Figure', 'Education', 'Blogger', 'Artist', 'Religious Figure'],
+      stepNumber: 'Step 6',
+      subLabel: 'Choose the category::',
+      bulletPoints: [' Personal Blog'],
     ),
-    StepItem(
-      stepNumber: 'Step 9',
-      subLabel: 'Fill:',
-      bulletPoints: ['Email', 'Phone Number (optional)', 'Location (optional)'],
-    ),
-    StepItem(
-      stepNumber: 'Step 10',
-      titleSuffix: ' — Display Options',
-      subLabel: 'Toggle:',
-      bulletPoints: ['Show Category Label → ON/OFF', 'Show Contact Info → ON/OFF'],
-    ),
+
+    StepItem(stepNumber: 'Step 7', subLabel: 'Continue and confirm.'),
+    StepItem(stepNumber: 'Step 8', subLabel: 'Select Creator.'),
+    StepItem(stepNumber: 'Step 9', subLabel: 'Complete your profile information.'),
   ];
 
   void completeSetup() {

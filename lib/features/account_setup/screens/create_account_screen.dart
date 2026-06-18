@@ -72,13 +72,78 @@ class CreateAccountScreen extends StatelessWidget {
             ),
 
             // Bottom Fixed Navigation Action Button
-            isFromSettings ? SizedBox(height: 16.h) : Obx(() => Padding(
+            // isFromSettings ? SizedBox(height: 16.h) : Obx(() => Padding(
+            //   padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
+            //   child: ActionButton(
+            //     text: controller.selectedTab.value == 0 ? 'Connect Facebook' : 'Connect Instagram',
+            //     onPressed: controller.completeSetup,
+            //   ),
+            // ))
+
+            isFromSettings
+                ? SizedBox(height: 16.h)
+                :Padding(
               padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
-              child: ActionButton(
-                text: controller.selectedTab.value == 0 ? 'Connect Facebook' : 'Connect Instagram',
-                onPressed: controller.completeSetup,
+              child: Row(
+                children: [
+                  Expanded(
+                      child: Container(
+                        padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: AppColor.lightBoarderColor, width: 1.w),
+                          borderRadius: BorderRadius.circular(10.r),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.link,
+                              size: 20.r,
+                              color: AppColor.lightTextSecondaryColor,
+                            ),
+                            SizedBox(width: 8.w),
+                            Text(
+                              'Copy link',
+                              style: AppTextTheme.bodyTextStyle.copyWith(
+                                fontWeight: FontWeight.w700,
+                              ),
+                            )
+                          ],
+                        ),
+                      )
+                  ),
+                  SizedBox(width: 16.w),
+                  Expanded(
+                      child: Container(
+                        padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: AppColor.lightBoarderColor, width: 1.w),
+                          borderRadius: BorderRadius.circular(10.r),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.screen_share_rounded,
+                              size: 20.r,
+                              color: AppColor.lightTextSecondaryColor,
+                            ),
+                            SizedBox(width: 8.w),
+                            Text(
+                              'Share',
+                              style: AppTextTheme.bodyTextStyle.copyWith(
+                                fontWeight: FontWeight.w700,
+                              ),
+                            )
+                          ],
+                        ),
+                      )
+                  ),
+                ],
               ),
-            ))
+            )
+
+
           ],
         ),
       ),

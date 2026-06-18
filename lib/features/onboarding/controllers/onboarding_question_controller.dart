@@ -5,9 +5,8 @@ import 'package:outlive/features/auth/screens/login_screen.dart';
 class OnboardingQuestionController extends GetxController {
 
   final List<String> questions = [
-    '“What will remain from you?”',
-    '“Build ongoing reward through beneficial reminders and knowledge.”',
-    '“Create deeds that continue beyond your lifetime.”'
+    '“In the Name of Allah the Most Gracious the Most Merciful. Assalamu Alaykum. Automate Islamic reminders so good deeds keep flowing.”',
+    '“Please follow all steps, everything will be automated thereafter and you will never need to do anything.”',
   ];
 
   RxInt currentQuestionIndex = 0.obs;

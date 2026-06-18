@@ -21,6 +21,7 @@ class MyApp extends StatelessWidget {
       builder: (context, child) {
         return GetMaterialApp(
           title: 'OutLive',
+          debugShowCheckedModeBanner: false,
           theme: AppTheme().darkTheme,
           home: WelcomeScreen()
         );

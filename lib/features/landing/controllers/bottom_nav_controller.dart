@@ -31,41 +31,15 @@ class BottomNavController extends GetxController {
 
   final List<AppBar> appBar = [
     AppBar(
+      title: Text(
+  'Home',
+  style: AppTextTheme.bodyTextStyle.copyWith(
+  color: AppColor.lightTextColor,
+  fontSize: 16.sp,
+  fontWeight: FontWeight.w600
+  ),
+  ),
       elevation: 0,
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Text(
-                    'Assalamu Alaikum, Ovie',
-                    style: AppTextTheme.titleTextStyle.copyWith(
-                      fontSize: 18.sp,
-                    ),
-                  ),
-                  SizedBox(width: 4.w),
-                  Text('👋', style: TextStyle(fontSize: 18.sp)),
-                ],
-              ),
-              SizedBox(height: 4.h),
-              Text(
-                'You have 3 important memories this week',
-                style: AppTextTheme.bodyTextStyle.copyWith(
-                  fontSize: 12.sp,
-                ),
-              ),
-            ],
-          ),
-          Row(
-            children: [
-
-            ],
-          ),
-        ],
-      ),
       automaticallyImplyLeading: false,
       actions: [
         GestureDetector(

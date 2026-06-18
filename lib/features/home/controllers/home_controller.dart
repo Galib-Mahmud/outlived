@@ -34,11 +34,13 @@ class ImpactMetric {
   final String value;
   final String label;
   final bool isGreenIcon;
+  final String? iconPath;
 
   ImpactMetric({
     required this.value,
     required this.label,
     required this.isGreenIcon,
+    required this.iconPath,
   });
 }
 
@@ -67,10 +69,10 @@ class HomeController extends GetxController {
   ];
 
   final List<ImpactMetric> impactMetrics = [
-    ImpactMetric(value: "12", label: "People Viewed", isGreenIcon: false),
-    ImpactMetric(value: "12", label: "Recurring Reminders Active", isGreenIcon: true),
-    ImpactMetric(value: "12", label: "Shares This Month", isGreenIcon: false),
-    ImpactMetric(value: "12", label: "Ongoing Deeds Running", isGreenIcon: true),
+    ImpactMetric(value: "12", label: "People Viewed", isGreenIcon: false, iconPath: "assets/icons/eye.png"),
+    ImpactMetric(value: "12", label: "Recurring Reminders Active", isGreenIcon: true, iconPath: "assets/icons/reminder.png"),
+    ImpactMetric(value: "12", label: "Shares This Month", isGreenIcon: false, iconPath: "assets/icons/whatsapp.png"),
+    ImpactMetric(value: "12", label: "Ongoing Deeds Running", isGreenIcon: true, iconPath: "assets/icons/deed.png"),
   ];
 
   void handleNotificationTap() => Get.to(NotificationScreen());
