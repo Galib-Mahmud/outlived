@@ -39,20 +39,22 @@ class LoginScreen extends StatelessWidget {
                   color: AppColor.lightSurfaceColor,
                   borderRadius: BorderRadius.circular(8.r),
                 ),
-                child: Obx(() => Row(
-                  children: [
-                    TabBtn(
-                      isActive: controller.selectedTab.value == 0,
-                      onTap: () => controller.selectedTab.value = 0,
-                      text: 'Login',
-                    ),
-                    TabBtn(
-                      isActive: controller.selectedTab.value == 1,
-                      onTap: () => controller.selectedTab.value = 1,
-                      text: 'Sign Up',
-                    ),
-                  ],
-                )),
+                child: Obx(
+                  () => Row(
+                    children: [
+                      TabBtn(
+                        isActive: controller.selectedTab.value == 0,
+                        onTap: () => controller.selectedTab.value = 0,
+                        text: 'Login',
+                      ),
+                      TabBtn(
+                        isActive: controller.selectedTab.value == 1,
+                        onTap: () => controller.selectedTab.value = 1,
+                        text: 'Sign Up',
+                      ),
+                    ],
+                  ),
+                ),
               ),
 
               SizedBox(height: 32.h),
@@ -103,49 +105,53 @@ class LoginScreen extends StatelessWidget {
           ],
         ),
         SizedBox(height: 8.h),
-        Obx(() => CustomTextField(
-          controller: controller.passwordController,
-          hintText: 'Enter your password',
-          obscureText: controller.obscurePassword.value,
-          suffixIcon: IconButton(
-            icon: Icon(
-              controller.obscurePassword.value
-                  ? Icons.visibility_off_outlined
-                  : Icons.visibility_outlined,
-              color: AppColor.lightTextTertiaryColor,
-              size: 20.sp,
+        Obx(
+          () => CustomTextField(
+            controller: controller.passwordController,
+            hintText: 'Enter your password',
+            obscureText: controller.obscurePassword.value,
+            suffixIcon: IconButton(
+              icon: Icon(
+                controller.obscurePassword.value
+                    ? Icons.visibility_off_outlined
+                    : Icons.visibility_outlined,
+                color: AppColor.lightTextTertiaryColor,
+                size: 20.sp,
+              ),
+              onPressed: controller.togglePasswordVisibility,
             ),
-            onPressed: controller.togglePasswordVisibility,
           ),
-        )),
-        Obx(() => controller.hasError.value
-            ? Padding(
-          padding: EdgeInsets.only(top: 12.h),
-          child: Row(
-            children: [
-              Icon(
-                Icons.warning_amber_rounded,
-                color: const Color(0xFFD32F2F),
-                size: 16.sp,
-              ),
-              SizedBox(width: 6.w),
-              Text(
-                'Please enter correct password',
-                style: AppTextTheme.bodyTextStyle.copyWith(
-                  color: const Color(0xFFD32F2F),
-                  fontSize: 12.sp,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
-        )
-            : const SizedBox.shrink()),
+        ),
+        Obx(
+          () => controller.hasError.value
+              ? Padding(
+                  padding: EdgeInsets.only(top: 12.h),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.warning_amber_rounded,
+                        color: const Color(0xFFD32F2F),
+                        size: 16.sp,
+                      ),
+                      SizedBox(width: 6.w),
+                      Text(
+                        'Please enter correct password',
+                        style: AppTextTheme.bodyTextStyle.copyWith(
+                          color: const Color(0xFFD32F2F),
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : const SizedBox.shrink(),
+        ),
         SizedBox(height: 32.h),
         ActionButton(
           text: 'Login',
           onPressed: () => Get.to(() => const LandingScreen()),
-        )
+        ),
       ],
     );
   }
@@ -154,64 +160,64 @@ class LoginScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        const CustomLabel(text: 'Full Name'),
+        SizedBox(height: 8.h),
+        CustomTextField(
+          controller: controller.fullNameController,
+          hintText: 'Enter your full name',
+        ),
+        SizedBox(height: 24.h),
+
         const CustomLabel(text: 'Email Address'),
         SizedBox(height: 8.h),
         CustomTextField(
-          controller: controller.emailController,
+          controller: controller.signUpEmailController,
           hintText: 'Enter your email',
         ),
         SizedBox(height: 24.h),
+
         const CustomLabel(text: 'Password'),
         SizedBox(height: 8.h),
-        Obx(() => CustomTextField(
-          controller: controller.passwordController,
-          hintText: 'Enter your password',
-          obscureText: controller.obscurePassword.value,
-          suffixIcon: IconButton(
-            icon: Icon(
-              controller.obscurePassword.value
-                  ? Icons.visibility_off_outlined
-                  : Icons.visibility_outlined,
-              color: AppColor.lightTextTertiaryColor,
-              size: 20.sp,
+        Obx(
+          () => CustomTextField(
+            controller: controller.signUpPasswordController,
+            obscureText: controller.obscurePassword.value,
+            suffixIcon: IconButton(
+              icon: Icon(
+                controller.obscurePassword.value
+                    ? Icons.visibility_off_outlined
+                    : Icons.visibility_outlined,
+              ),
+              onPressed: controller.togglePasswordVisibility,
             ),
-            onPressed: controller.togglePasswordVisibility,
+            hintText: '',
           ),
-        )),
+        ),
         SizedBox(height: 16.h),
+
         const CustomLabel(text: 'Re Type Password'),
         SizedBox(height: 8.h),
-        Obx(() => CustomTextField(
-          // Consider using a separate reTypePasswordController here
-          controller: controller.passwordController,
-          hintText: 'Enter your password',
-          obscureText: controller.obscurePassword.value,
-          suffixIcon: IconButton(
-            icon: Icon(
-              controller.obscurePassword.value
-                  ? Icons.visibility_off_outlined
-                  : Icons.visibility_outlined,
-              color: AppColor.lightTextTertiaryColor,
-              size: 20.sp,
+        Obx(
+          () => CustomTextField(
+            controller: controller.signUpRePasswordController,
+            // Use the separate controller
+            obscureText: controller.obscureReTypePassword.value,
+            suffixIcon: IconButton(
+              icon: Icon(
+                controller.obscureReTypePassword.value
+                    ? Icons.visibility_off_outlined
+                    : Icons.visibility_outlined,
+              ),
+              onPressed: controller.toggleReTypePasswordVisibility,
             ),
-            onPressed: controller.togglePasswordVisibility,
+            hintText: '',
           ),
-        )),
+        ),
         SizedBox(height: 32.h),
-        ActionButton(
-          text: 'Sign Up',
-          onPressed: () => Get.to(() => CreateAccountScreen()),
-        ),
-        SizedBox(height: 16.h),
-        Text(
-          'By clicking the “sign up” button, you accept the terms of the Privacy Policy.',
-          style: AppTextTheme.bodyTextStyle.copyWith(
-            color: AppColor.lightTextTertiaryColor,
-            fontSize: 12.sp,
-            fontWeight: FontWeight.w700,
-            fontStyle: FontStyle.italic,
-          ),
-        ),
+
+        // Update onPressed to call signUp()
+        ActionButton(text: 'Sign Up', onPressed: controller.signUp),
+        // ...
       ],
     );
   }
