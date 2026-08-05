@@ -2,10 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:outlive/core/theme/app_theme.dart';
+import 'package:outlive/features/auth/screens/otp_screen.dart';
 import 'package:outlive/features/landing/screens/landing_screen.dart';
+import 'core/storage/local_storage.dart';
 import 'features/onboarding/screens/welcome_screen.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await UserInfo.init();
   runApp(const MyApp());
 }
 

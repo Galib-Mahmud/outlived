@@ -8,8 +8,6 @@ import 'package:outlive/features/auth/screens/reset_password_screen.dart';
 import '../../../core/endpoint/api_client.dart';
 import '../../../core/endpoint/api_endpoint.dart';
 import '../../../core/storage/local_storage.dart';
-
-
 class OtpController extends GetxController {
   final ApiClient _apiClient = ApiClient(baseUrl: ApiEndpoint.baseUrl);
   final RxBool isLoading = false.obs;
@@ -17,8 +15,9 @@ class OtpController extends GetxController {
   // 'register' or 'forgot_password'
   final RxString flowType = 'register'.obs;
 
-  final List<TextEditingController> controllers = List.generate(5, (_) => TextEditingController());
-  final List<FocusNode> focusNodes = List.generate(5, (_) => FocusNode());
+  // FIX 1: Changed 5 to 6 for both controllers and focusNodes
+  final List<TextEditingController> controllers = List.generate(6, (_) => TextEditingController());
+  final List<FocusNode> focusNodes = List.generate(6, (_) => FocusNode());
 
   @override
   void onInit() {
@@ -29,15 +28,21 @@ class OtpController extends GetxController {
   }
 
   void handleOtpTyping(String value, int index) {
-    if (value.isNotEmpty && index < 4) focusNodes[index + 1].requestFocus();
-    else if (value.isEmpty && index > 0) focusNodes[index - 1].requestFocus();
+    // FIX 2: Changed index < 4 to index < 5
+    if (value.isNotEmpty && index < 5) {
+      focusNodes[index + 1].requestFocus();
+    } else if (value.isEmpty && index > 0) {
+      focusNodes[index - 1].requestFocus();
+    }
   }
 
   String get _otpCode => controllers.map((c) => c.text).join('');
 
   Future<void> verifyOtp() async {
-    if (_otpCode.length < 5) {
-      Get.snackbar("Error", "Please enter the complete code", snackPosition: SnackPosition.BOTTOM); return;
+    // FIX 3: Changed length < 5 to length < 6
+    if (_otpCode.length < 6) {
+      Get.snackbar("Error", "Please enter the complete 6-digit code", snackPosition: SnackPosition.BOTTOM);
+      return;
     }
 
     isLoading.value = true;
@@ -52,13 +57,22 @@ class OtpController extends GetxController {
         );
 
         Get.snackbar("Success", "Account verified! Please login.", snackPosition: SnackPosition.BOTTOM);
-        Get.to(LoginScreen());
+
+        // TIP: Use offAll instead of to() so the user can't press the "Back" button
+        // on the Login Screen and end up back on the OTP screen.
+        Get.offAll(() => const LoginScreen());
       } else {
         // FORGOT PASSWORD FLOW: Pass code to ResetPasswordScreen
-        Get.to(ResetPasswordScreen(), arguments: {'code': _otpCode});
+        Get.to(() => const ResetPasswordScreen(), arguments: {'code': _otpCode});
       }
+    } on NetworkException catch (e) {
+      // FIX 4: Added NetworkException catch (prevents silent failures on bad internet)
+      Get.snackbar("Error", e.message, snackPosition: SnackPosition.BOTTOM);
     } on HttpException catch (e) {
       Get.snackbar("Error", _extractMessage(e.body) ?? e.message, snackPosition: SnackPosition.BOTTOM);
+    } catch (e) {
+      Get.snackbar("Error", "Something went wrong. Please try again.", snackPosition: SnackPosition.BOTTOM);
+      debugPrint("OtpController.verifyOtp unexpected error: $e");
     } finally {
       isLoading.value = false;
     }

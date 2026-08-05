@@ -48,46 +48,51 @@ class OtpScreen extends StatelessWidget {
               const CustomLabel(text: 'Enter Code'),
               SizedBox(height: 16.h),
 
-              // 5-Digit OTP Row Block
+              // 6-Digit OTP Row Block
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: List.generate(5, (index) => SizedBox(
-                  width: 56.w,
-                  height: 56.h,
-                  child: TextFormField(
-                    controller: controller.controllers[index],
-                    focusNode: controller.focusNodes[index],
-                    onChanged: (value) => controller.handleOtpTyping(value, index),
-                    style: AppTextTheme.titleTextStyle.copyWith(
-                      color: AppColor.lightTextColor,
-                      fontSize: 20.sp,
-                    ),
-                    textAlign: TextAlign.center,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [
-                      LengthLimitingTextInputFormatter(1),
-                      FilteringTextInputFormatter.digitsOnly,
-                    ],
-                    decoration: InputDecoration(
-                      hintText: '-',
-                      hintStyle: AppTextTheme.bodyTextStyle.copyWith(
-                        color: AppColor.lightTextTertiaryColor,
-                        fontSize: 18.sp,
-                      ),
-                      fillColor: AppColor.lightSurfaceColor,
-                      filled: true,
-                      contentPadding: EdgeInsets.zero,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.r),
-                        borderSide: BorderSide(color: AppColor.primaryColor.withOpacity(0.1)),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.r),
-                        borderSide: BorderSide(color: AppColor.primaryColor.withOpacity(0.1)),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.r),
-                        borderSide: const BorderSide(color: AppColor.primaryColor),
+                // mainAxisAlignment is removed because Expanded takes up all available space
+                children: List.generate(6, (index) => Expanded(
+                  child: Padding(
+                    // Adds spacing between boxes, but removes it on the last box
+                    padding: EdgeInsets.only(right: index == 5 ? 0 : 8.w),
+                    child: SizedBox(
+                      height: 56.h,
+                      child: TextFormField(
+                        controller: controller.controllers[index],
+                        focusNode: controller.focusNodes[index],
+                        onChanged: (value) => controller.handleOtpTyping(value, index),
+                        style: AppTextTheme.titleTextStyle.copyWith(
+                          color: AppColor.lightTextColor,
+                          fontSize: 20.sp,
+                        ),
+                        textAlign: TextAlign.center,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          LengthLimitingTextInputFormatter(1),
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
+                        decoration: InputDecoration(
+                          hintText: '-',
+                          hintStyle: AppTextTheme.bodyTextStyle.copyWith(
+                            color: AppColor.lightTextTertiaryColor,
+                            fontSize: 18.sp,
+                          ),
+                          fillColor: AppColor.lightSurfaceColor,
+                          filled: true,
+                          contentPadding: EdgeInsets.zero,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8.r),
+                            borderSide: BorderSide(color: AppColor.primaryColor.withOpacity(0.1)),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8.r),
+                            borderSide: BorderSide(color: AppColor.primaryColor.withOpacity(0.1)),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8.r),
+                            borderSide: const BorderSide(color: AppColor.primaryColor),
+                          ),
+                        ),
                       ),
                     ),
                   ),

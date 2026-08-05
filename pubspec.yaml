@@ -18,6 +18,8 @@ dependencies:
   flutter_screenutil: ^5.9.3
   get:
   gradient_borders: ^1.0.4
+  flutter_facebook_auth:
+  firebase_messaging:
 
   permission_handler: ^12.0.3
   flutter_native_contact_picker: ^0.0.12

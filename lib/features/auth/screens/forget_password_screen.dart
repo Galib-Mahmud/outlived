@@ -15,7 +15,6 @@ class ForgotPasswordScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(ForgotPasswordController());
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -34,7 +33,6 @@ class ForgotPasswordScreen extends StatelessWidget {
               SizedBox(height: 20.h),
               const AuthHeader(),
               SizedBox(height: 48.h),
-
               // Page Header Title
               Text(
                 'Forget Password',
@@ -43,24 +41,23 @@ class ForgotPasswordScreen extends StatelessWidget {
                   fontWeight: FontWeight.w700,
                 ),
               ),
-
               SizedBox(height: 24.h),
               const CustomLabel(text: 'Email Address'),
               SizedBox(height: 8.h),
-
               // Email Form Field
               CustomTextField(
                 controller: controller.emailController,
                 hintText: 'Enter your email',
               ),
-
               SizedBox(height: 32.h),
-
-              // Send OTP CTA Button
-              ActionButton(
-                text: 'Send OTP',
-                onPressed: controller.sendOtp,
-              )
+              // Send OTP CTA Button — now disables + reflects isLoading so a
+              // slow network can't cause a double-tap double-submit.
+              Obx(
+                    () => ActionButton(
+                  text: controller.isLoading.value ? 'Sending...' : 'Send OTP',
+                  onPressed: controller.isLoading.value ? null : controller.sendOtp,
+                ),
+              ),
             ],
           ),
         ),

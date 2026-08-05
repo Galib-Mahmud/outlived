@@ -5,10 +5,8 @@ import 'package:outlive/core/theme/text_theme.dart';
 import 'package:outlive/core/universal_widgets/auth_header.dart';
 import 'package:outlive/core/universal_widgets/custom_label.dart';
 import 'package:outlive/core/universal_widgets/custom_text_field.dart';
-import 'package:outlive/features/landing/screens/landing_screen.dart';
 import '../../../core/theme/app_color.dart';
 import '../../../core/universal_widgets/action_button.dart';
-import '../../account_setup/screens/create_account_screen.dart';
 import '../controllers/login_controller.dart';
 import '../widgets/tab_btn.dart';
 import 'forget_password_screen.dart';
@@ -40,7 +38,7 @@ class LoginScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8.r),
                 ),
                 child: Obx(
-                  () => Row(
+                      () => Row(
                     children: [
                       TabBtn(
                         isActive: controller.selectedTab.value == 0,
@@ -106,7 +104,7 @@ class LoginScreen extends StatelessWidget {
         ),
         SizedBox(height: 8.h),
         Obx(
-          () => CustomTextField(
+              () => CustomTextField(
             controller: controller.passwordController,
             hintText: 'Enter your password',
             obscureText: controller.obscurePassword.value,
@@ -123,34 +121,43 @@ class LoginScreen extends StatelessWidget {
           ),
         ),
         Obx(
-          () => controller.hasError.value
+              () => controller.hasError.value
               ? Padding(
-                  padding: EdgeInsets.only(top: 12.h),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.warning_amber_rounded,
-                        color: const Color(0xFFD32F2F),
-                        size: 16.sp,
-                      ),
-                      SizedBox(width: 6.w),
-                      Text(
-                        'Please enter correct password',
-                        style: AppTextTheme.bodyTextStyle.copyWith(
-                          color: const Color(0xFFD32F2F),
-                          fontSize: 12.sp,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
+            padding: EdgeInsets.only(top: 12.h),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.warning_amber_rounded,
+                  color: const Color(0xFFD32F2F),
+                  size: 16.sp,
+                ),
+                SizedBox(width: 6.w),
+                Text(
+                  'Please enter correct email and password',
+                  style: AppTextTheme.bodyTextStyle.copyWith(
+                    color: const Color(0xFFD32F2F),
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w500,
                   ),
-                )
+                ),
+              ],
+            ),
+          )
               : const SizedBox.shrink(),
         ),
         SizedBox(height: 32.h),
-        ActionButton(
-          text: 'Login',
-          onPressed: () => Get.to(() => const LandingScreen()),
+
+        // FIX: this previously navigated straight to LandingScreen and
+        // never called controller.login() — meaning the API call,
+        // validation, token storage, and error handling never ran.
+        // Now it calls the controller, and disables/shows a spinner
+        // while isLoading is true so a slow network can't cause a
+        // double-tap double-submit.
+        Obx(
+              () => ActionButton(
+            text: controller.isLoading.value ? 'Logging in...' : 'Login',
+            onPressed: controller.isLoading.value ? null : controller.login,
+          ),
         ),
       ],
     );
@@ -179,7 +186,7 @@ class LoginScreen extends StatelessWidget {
         const CustomLabel(text: 'Password'),
         SizedBox(height: 8.h),
         Obx(
-          () => CustomTextField(
+              () => CustomTextField(
             controller: controller.signUpPasswordController,
             obscureText: controller.obscurePassword.value,
             suffixIcon: IconButton(
@@ -198,9 +205,8 @@ class LoginScreen extends StatelessWidget {
         const CustomLabel(text: 'Re Type Password'),
         SizedBox(height: 8.h),
         Obx(
-          () => CustomTextField(
+              () => CustomTextField(
             controller: controller.signUpRePasswordController,
-            // Use the separate controller
             obscureText: controller.obscureReTypePassword.value,
             suffixIcon: IconButton(
               icon: Icon(
@@ -215,9 +221,12 @@ class LoginScreen extends StatelessWidget {
         ),
         SizedBox(height: 32.h),
 
-        // Update onPressed to call signUp()
-        ActionButton(text: 'Sign Up', onPressed: controller.signUp),
-        // ...
+        Obx(
+              () => ActionButton(
+            text: controller.isLoading.value ? 'Signing up...' : 'Sign Up',
+            onPressed: controller.isLoading.value ? null : controller.signUp,
+          ),
+        ),
       ],
     );
   }

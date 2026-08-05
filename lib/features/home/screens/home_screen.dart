@@ -15,264 +15,428 @@ class HomeScreen extends StatelessWidget {
 
     return Scaffold(
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+        child: RefreshIndicator(
+          onRefresh: controller.refresh,
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
 
-              // --- SUNRISE & SUNSET CARD BANNER ---
-              Container(
-                width: double.infinity,
-                height: 90.h,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16.r),
-                  image: const DecorationImage(
-                    image: AssetImage('assets/images/sunrise_bg.jpg'),
-                    fit: BoxFit.cover,
-                    colorFilter: ColorFilter.mode(
-                      Colors.black54,
-                      BlendMode.darken,
+                // --- ERROR BANNER ---
+                Obx(() {
+                  if (controller.errorMessage.value.isEmpty) return const SizedBox.shrink();
+                  return Container(
+                    width: double.infinity,
+                    margin: EdgeInsets.only(bottom: 16.h),
+                    padding: EdgeInsets.all(12.r),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFDECEA),
+                      borderRadius: BorderRadius.circular(12.r),
                     ),
-                  ),
-                ),
-                child: Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 16.w,
-                    vertical: 12.h,
-                  ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.error_outline, color: Color(0xFFD32F2F), size: 18),
+                        SizedBox(width: 8.w),
+                        Expanded(
+                          child: Text(
+                            controller.errorMessage.value,
+                            style: TextStyle(color: const Color(0xFFD32F2F), fontSize: 12.sp),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: controller.refresh,
+                          child: Text(
+                            'Retry',
+                            style: TextStyle(
+                              color: const Color(0xFFD32F2F),
+                              fontSize: 12.sp,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+
+                // --- SUNRISE & SUNSET CARD BANNER ---
+                Container(
+                  width: double.infinity,
+                  height: 90.h,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(16.r),
-                    gradient: LinearGradient(
-                      colors: [
-                        Colors.black.withOpacity(0.4),
-                        Colors.transparent,
-                      ],
-                      begin: Alignment.bottomCenter,
-                      end: Alignment.topCenter,
+                    image: const DecorationImage(
+                      image: AssetImage('assets/images/sunrise_bg.jpg'),
+                      fit: BoxFit.cover,
+                      colorFilter: ColorFilter.mode(
+                        Colors.black54,
+                        BlendMode.darken,
+                      ),
                     ),
                   ),
-                  child: Row(
-                    children: [
-                      // Circular Mini Sun Graphic Indicator
-                      Container(
-                        width: 54.w,
-                        height: 54.h,
-                        padding: EdgeInsets.all(8.r),
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          image: DecorationImage(
-                            image: AssetImage('assets/images/sun_status_bg.png'),
-                            fit: BoxFit.contain,
-                          ),
-                        ),
-                        child: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                '7:23',
-                                style: AppTextTheme.bodyTextStyle.copyWith(
-                                  fontSize: 10.sp,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              Spacer(),
-                              Text(
-                                '6:32',
-                                style: AppTextTheme.bodyTextStyle.copyWith(
-                                  fontSize: 10.sp,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 16.w),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Sunrise & Sunset',
-                            style: AppTextTheme.bodyTextStyle.copyWith(
-                              fontSize: 20.sp,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.white,
-                            ),
-                          ),
-                          SizedBox(height: 2.h),
-                          Text(
-                            'Fajar will start at after 7:39 AM',
-                            style: AppTextTheme.bodyTextStyle.copyWith(
-                              fontSize: 12.sp,
-                              color: Colors.white70,
-                            ),
-                          ),
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 16.w,
+                      vertical: 12.h,
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16.r),
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.black.withOpacity(0.4),
+                          Colors.transparent,
                         ],
+                        begin: Alignment.bottomCenter,
+                        end: Alignment.topCenter,
                       ),
-                    ],
-                  ),
-                ),
-              ),
-
-              SizedBox(height: 20.h),
-
-              // --- PRIMARY MEMORY CARD BLOCK ---
-              Container(
-                width: double.infinity,
-                padding: EdgeInsets.all(16.r),
-                decoration: BoxDecoration(
-                  color: AppColor.lightSurfaceColor,
-                  borderRadius: BorderRadius.circular(20.r),
-                    border: Border.all(color: AppColor.lightBoarderColor, width: 1.r)
-                ),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    ),
+                    child: Row(
                       children: [
-                        Row(
-                          children: [
-                            Image.asset(
-                              'assets/icons/whatsapp.png',
-                              width: 20.w,
-                              height: 20.h,
-                              fit: BoxFit.cover,
+                        Container(
+                          width: 54.w,
+                          height: 54.h,
+                          padding: EdgeInsets.all(8.r),
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            image: DecorationImage(
+                              image: AssetImage('assets/images/sun_status_bg.png'),
+                              fit: BoxFit.contain,
                             ),
-                            SizedBox(width: 8.w),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                          ),
+                          child: Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  controller.memoryPost.author,
-                                  style: TextStyle(
-                                    fontSize: 16.sp,
-                                    fontWeight: FontWeight.w700,
-                                    color: const Color(0xFF1A1A1A),
+                                  '7:23',
+                                  style: AppTextTheme.bodyTextStyle.copyWith(
+                                    fontSize: 10.sp,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.white,
                                   ),
                                 ),
+                                const Spacer(),
                                 Text(
-                                  controller.memoryPost.relativeTime,
-                                  style: TextStyle(
-                                    fontSize: 12.sp,
-                                    color: AppColor.secondaryColor,
+                                  '6:32',
+                                  style: AppTextTheme.bodyTextStyle.copyWith(
+                                    fontSize: 10.sp,
                                     fontWeight: FontWeight.w500,
+                                    color: Colors.white,
                                   ),
                                 ),
                               ],
                             ),
-                          ],
+                          ),
                         ),
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 12.w,
-                            vertical: 6.h,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColor.primaryColor.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(12.r),
-                            border: Border.all(color: AppColor.primaryColor.withOpacity(0.2), width: 1.r)
-                          ),
-                          child: Text(
-                            '• ${controller.memoryPost.tag}',
-                            style: TextStyle(
-                              color: AppColor.primaryColor.withOpacity(0.7),
-                              fontSize: 11.sp,
-                              fontWeight: FontWeight.w700,
+                        SizedBox(width: 16.w),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Sunrise & Sunset',
+                              style: AppTextTheme.bodyTextStyle.copyWith(
+                                fontSize: 20.sp,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
+                              ),
                             ),
-                          ),
+                            SizedBox(height: 2.h),
+                            Text(
+                              'Fajar will start at after 7:39 AM',
+                              style: AppTextTheme.bodyTextStyle.copyWith(
+                                fontSize: 12.sp,
+                                color: Colors.white70,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                    SizedBox(height: 16.h),
-                    Container(
-                      width: double.infinity,
-                      padding: EdgeInsets.only(
-                        top: 14.h,
-                        right: 14.w,
-                        bottom: 14.h,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColor.lightBackgroundColor,
-                        borderRadius: BorderRadius.circular(14.r),
-                        border: Border.all(color: AppColor.lightBoarderColor, width: 1.r)
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                  ),
+                ),
+
+                SizedBox(height: 20.h),
+
+                // --- PRIMARY MEMORY CARD BLOCK ---
+                Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.all(16.r),
+                  decoration: BoxDecoration(
+                    color: AppColor.lightSurfaceColor,
+                    borderRadius: BorderRadius.circular(20.r),
+                    border: Border.all(color: AppColor.lightBoarderColor, width: 1.r),
+                  ),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Container(
-                            width: 3.w,
-                            height: 64.h,
-                            decoration: BoxDecoration(
-                              color: AppColor.primaryColor,
-                              borderRadius: BorderRadius.only(
-                                topRight: Radius.circular(14.r),
-                                bottomRight: Radius.circular(14.r),
-                              )
-                            ),
+                          Row(
+                            children: [
+                              Image.asset(
+                                'assets/icons/whatsapp.png',
+                                width: 20.w,
+                                height: 20.h,
+                                fit: BoxFit.cover,
+                              ),
+                              SizedBox(width: 8.w),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    controller.memoryPost.author,
+                                    style: TextStyle(
+                                      fontSize: 16.sp,
+                                      fontWeight: FontWeight.w700,
+                                      color: const Color(0xFF1A1A1A),
+                                    ),
+                                  ),
+                                  Text(
+                                    controller.memoryPost.relativeTime,
+                                    style: TextStyle(
+                                      fontSize: 12.sp,
+                                      color: AppColor.secondaryColor,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
-                          SizedBox(width: 12.w),
-                          Expanded(
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 12.w,
+                              vertical: 6.h,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColor.primaryColor.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(12.r),
+                              border: Border.all(color: AppColor.primaryColor.withOpacity(0.2), width: 1.r),
+                            ),
                             child: Text(
-                              controller.memoryPost.quote,
+                              '• ${controller.memoryPost.tag}',
                               style: TextStyle(
-                                fontSize: 13.sp,
-                                color: const Color(0xFF2C2C2C),
-                                height: 1.4.h,
-                                fontWeight: FontWeight.w500,
+                                color: AppColor.primaryColor.withOpacity(0.7),
+                                fontSize: 11.sp,
+                                fontWeight: FontWeight.w700,
                               ),
                             ),
                           ),
                         ],
                       ),
+                      SizedBox(height: 16.h),
+                      Container(
+                        width: double.infinity,
+                        padding: EdgeInsets.only(
+                          top: 14.h,
+                          right: 14.w,
+                          bottom: 14.h,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColor.lightBackgroundColor,
+                          borderRadius: BorderRadius.circular(14.r),
+                          border: Border.all(color: AppColor.lightBoarderColor, width: 1.r),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              width: 3.w,
+                              height: 64.h,
+                              decoration: BoxDecoration(
+                                color: AppColor.primaryColor,
+                                borderRadius: BorderRadius.only(
+                                  topRight: Radius.circular(14.r),
+                                  bottomRight: Radius.circular(14.r),
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 12.w),
+                            Expanded(
+                              child: Text(
+                                controller.memoryPost.quote,
+                                style: TextStyle(
+                                  fontSize: 13.sp,
+                                  color: const Color(0xFF2C2C2C),
+                                  height: 1.4.h,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                SizedBox(height: 24.h),
+
+                // --- GOOD DEED POSTS HEADER SECTION ---
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    label('Good Deed Posts'),
+                    GestureDetector(
+                      onTap: controller.handleCreateNewDeed,
+                      child: Text(
+                        'Create Now',
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          color: AppColor.secondaryColor,
+                        ),
+                      ),
                     ),
                   ],
                 ),
-              ),
 
-              SizedBox(height: 24.h),
+                SizedBox(height: 14.h),
 
-              // --- GOOD DEED POSTS HEADER SECTION ---
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  label('Good Deed Posts'),
-                  GestureDetector(
-                    onTap: controller.handleCreateNewDeed,
-                    child: Text(
-                      'Create Now',
-                      style: TextStyle(
-                        fontSize: 12.sp,
-                        color: AppColor.secondaryColor
+                // Horizontal Good Deed List Row Block
+                Obx(() {
+                  if (controller.isLoading.value && controller.goodDeedPosts.isEmpty) {
+                    return SizedBox(
+                      height: 155.h,
+                      child: const Center(child: CircularProgressIndicator()),
+                    );
+                  }
+                  if (controller.goodDeedPosts.isEmpty) {
+                    return SizedBox(
+                      height: 60.h,
+                      child: Center(
+                        child: Text(
+                          'No deeds yet — create one to get started.',
+                          style: TextStyle(fontSize: 12.sp, color: const Color(0xFF9E9E9E)),
+                        ),
                       ),
+                    );
+                  }
+                  return SizedBox(
+                    height: 155.h,
+                    child: ListView.builder(
+                      physics: const BouncingScrollPhysics(),
+                      // FIX: was hardcoded to 1, so only the first deed ever
+                      // rendered no matter how many came back.
+                      itemCount: controller.goodDeedPosts.length,
+                      itemBuilder: (context, index) {
+                        final deed = controller.goodDeedPosts[index];
+                        return InkWell(
+                          onTap: () => Get.to(() => PostDetailScreen()),
+                          child: Container(
+                            width: double.infinity,
+                            padding: EdgeInsets.all(14.r),
+                            decoration: BoxDecoration(
+                              color: AppColor.lightSurfaceColor,
+                              borderRadius: BorderRadius.circular(18.r),
+                              border: Border.all(color: AppColor.lightBoarderColor, width: 1.r),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Image.asset(
+                                      'assets/icons/deed_icon.png',
+                                      width: 24.w,
+                                      height: 24.h,
+                                      fit: BoxFit.cover,
+                                    ),
+                                    Text(
+                                      deed.timestamp,
+                                      style: TextStyle(
+                                        color: const Color(0xFF9E9E9E),
+                                        fontSize: 10.sp,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 8.h),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      deed.title,
+                                      style: TextStyle(
+                                        fontSize: 14.sp,
+                                        fontWeight: FontWeight.w700,
+                                        color: const Color(0xFF1A1A1A),
+                                        height: 1.2.h,
+                                      ),
+                                    ),
+                                    SizedBox(height: 8.h),
+                                    Text(
+                                      deed.snippet,
+                                      style: TextStyle(
+                                        fontSize: 11.sp,
+                                        color: const Color(0xFF9E9E9E),
+                                      ),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 10.h),
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 10.w,
+                                    vertical: 4.h,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: AppColor.lightBackgroundColor,
+                                    borderRadius: BorderRadius.circular(8.r),
+                                  ),
+                                  child: Text(
+                                    deed.platform,
+                                    style: TextStyle(
+                                      color: const Color(0xFF555555),
+                                      fontSize: 10.sp,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
                     ),
-                  ),
-                ],
-              ),
+                  );
+                }),
 
-              SizedBox(height: 14.h),
+                SizedBox(height: 10.h),
 
-              // Horizontal Good Deed List Row Block
-              SizedBox(
-                height: 155.h,
-                child: ListView.builder(
-                  physics: const BouncingScrollPhysics(),
-                  itemCount: 1,
-                  itemBuilder: (context, index) {
-                    final deed = controller.goodDeedPosts[index];
-                    return InkWell(
-                      onTap: () => Get.to(PostDetailScreen()),
-                      child: Container(
-                        width: double.infinity,
+                // --- IMPACT GRID MEASUREMENT ROW ---
+                label('Your Impact'),
+
+                SizedBox(height: 14.h),
+
+                Obx(() {
+                  if (controller.isLoading.value && controller.impactMetrics.isEmpty) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  return GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 14.w,
+                      mainAxisSpacing: 14.h,
+                      childAspectRatio: 1.35,
+                    ),
+                    itemCount: controller.impactMetrics.length,
+                    itemBuilder: (context, index) {
+                      final metric = controller.impactMetrics[index];
+                      return Container(
                         padding: EdgeInsets.all(14.r),
                         decoration: BoxDecoration(
                           color: AppColor.lightSurfaceColor,
+                          border: Border.all(color: AppColor.lightBoarderColor, width: 1.r),
                           borderRadius: BorderRadius.circular(18.r),
-                            border: Border.all(color: AppColor.lightBoarderColor, width: 1.r)
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -281,203 +445,110 @@ class HomeScreen extends StatelessWidget {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Image.asset(
-                                  'assets/icons/deed_icon.png',
-                                  width: 24.w,
-                                  height: 24.h,
-                                  fit: BoxFit.cover,
-                                ),
-                                Text(
-                                  deed.timestamp,
-                                  style: TextStyle(
-                                    color: const Color(0xFF9E9E9E),
-                                    fontSize: 10.sp,
+                                if (metric.iconPath != null)
+                                  Image.asset(
+                                    metric.iconPath!,
+                                    width: 16.w,
+                                    height: 16.h,
+                                    fit: BoxFit.cover,
                                   ),
+                                Icon(
+                                  Icons.trending_up_rounded,
+                                  color: metric.isGreenIcon
+                                      ? const Color(0xFF2E7D32)
+                                      : const Color(0xFF9E9E9E),
+                                  size: 16.sp,
                                 ),
                               ],
                             ),
-                            SizedBox(height: 8.h),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  deed.title,
+                                  metric.value,
                                   style: TextStyle(
-                                    fontSize: 14.sp,
-                                    fontWeight: FontWeight.w700,
+                                    fontSize: 22.sp,
+                                    fontWeight: FontWeight.w800,
                                     color: const Color(0xFF1A1A1A),
-                                    height: 1.2.h,
                                   ),
                                 ),
-                                SizedBox(height: 8.h),
                                 Text(
-                                  deed.snippet,
+                                  metric.label,
                                   style: TextStyle(
                                     fontSize: 11.sp,
-                                    color: const Color(0xFF9E9E9E),
+                                    color: const Color(0xFF888888),
+                                    fontWeight: FontWeight.w500,
+                                    height: 1.2.h,
                                   ),
                                 ),
                               ],
                             ),
-                            SizedBox(height: 10.h),
+                          ],
+                        ),
+                      );
+                    },
+                  );
+                }),
+
+                SizedBox(height: 24.h),
+
+                // --- DAILY REMINDER FOOTER BLOCK ---
+                Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.all(16.r),
+                  decoration: BoxDecoration(
+                    color: AppColor.lightSurfaceColor,
+                    border: Border.all(color: AppColor.lightBoarderColor, width: 1.r),
+                    borderRadius: BorderRadius.circular(20.r),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      label('Daily Reminder Card'),
+                      SizedBox(height: 12.h),
+                      Container(
+                        width: double.infinity,
+                        padding: EdgeInsets.only(
+                          top: 14.h,
+                          right: 14.w,
+                          bottom: 14.h,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColor.lightBackgroundColor,
+                          border: Border.all(color: AppColor.lightBoarderColor, width: 1.r),
+                          borderRadius: BorderRadius.circular(12.r),
+                        ),
+                        child: Row(
+                          children: [
                             Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 10.w,
-                                vertical: 4.h,
-                              ),
+                              width: 3.w,
+                              height: 24.h,
                               decoration: BoxDecoration(
-                                color: AppColor.lightBackgroundColor,
-                                borderRadius: BorderRadius.circular(8.r),
-                              ),
-                              child: Text(
-                                deed.platform,
-                                style: TextStyle(
-                                  color: const Color(0xFF555555),
-                                  fontSize: 10.sp,
-                                  fontWeight: FontWeight.w600,
+                                color: AppColor.primaryColor,
+                                borderRadius: BorderRadius.only(
+                                  topRight: Radius.circular(12.r),
+                                  bottomRight: Radius.circular(12.r),
                                 ),
                               ),
                             ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-
-
-              // --- IMPACT GRID MEASUREMENT ROW ---
-              label('Your Impact'),
-
-              SizedBox(height: 14.h),
-
-              GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 14.w,
-                  mainAxisSpacing: 14.h,
-                  childAspectRatio: 1.35,
-                ),
-                itemCount: controller.impactMetrics.length,
-                itemBuilder: (context, index) {
-                  final metric = controller.impactMetrics[index];
-                  return Container(
-                    padding: EdgeInsets.all(14.r),
-                    decoration: BoxDecoration(
-                      color: AppColor.lightSurfaceColor,
-                       border: Border.all(color: AppColor.lightBoarderColor, width: 1.r),
-                      borderRadius: BorderRadius.circular(18.r),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            if (metric.iconPath != null)
-                              Image.asset(
-                                metric.iconPath!,
-                                width: 16.w,
-                                height: 16.h,
-                                fit: BoxFit.cover,
-                              ),
-                            Icon(
-                              Icons.trending_up_rounded,
-                              color: const Color(0xFF9E9E9E),
-                              size: 16.sp,
-                            ),
-                          ],
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
+                            SizedBox(width: 12.w),
                             Text(
-                              metric.value,
+                              '\u201cToday is Jummah Day.\u201d',
                               style: TextStyle(
-                                fontSize: 22.sp,
-                                fontWeight: FontWeight.w800,
-                                color: const Color(0xFF1A1A1A),
-                              ),
-                            ),
-                            Text(
-                              metric.label,
-                              style: TextStyle(
-                                fontSize: 11.sp,
-                                color: const Color(0xFF888888),
-                                fontWeight: FontWeight.w500,
-                                height: 1.2.h,
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w600,
+                                color: const Color(0xFF2C2C2C),
                               ),
                             ),
                           ],
                         ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-
-              SizedBox(height: 24.h),
-
-              // --- DAILY REMINDER FOOTER BLOCK ---
-              Container(
-                width: double.infinity,
-                padding: EdgeInsets.all(16.r),
-                decoration: BoxDecoration(
-                  color: AppColor.lightSurfaceColor,
-                  border: Border.all(color: AppColor.lightBoarderColor, width: 1.r),
-                  borderRadius: BorderRadius.circular(20.r),
+                      ),
+                    ],
+                  ),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    label('Daily Reminder Card'),
-                    SizedBox(height: 12.h),
-                    Container(
-                      width: double.infinity,
-                      padding: EdgeInsets.only(
-                        top: 14.h,
-                        right: 14.w,
-                        bottom: 14.h,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColor.lightBackgroundColor,
-                        border: Border.all(color: AppColor.lightBoarderColor, width: 1.r),
-                        borderRadius: BorderRadius.circular(12.r),
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 3.w,
-                            height: 24.h,
-                            decoration: BoxDecoration(
-                              color: AppColor.primaryColor,
-                              borderRadius: BorderRadius.only(
-                                topRight: Radius.circular(12.r),
-                                bottomRight: Radius.circular(12.r),
-                              )
-                            ),
-                          ),
-                          SizedBox(width: 12.w),
-                          Text(
-                            '“Today is Jummah Day.”',
-                            style: TextStyle(
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.w600,
-                              color: const Color(0xFF2C2C2C),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 16.h),
-            ],
+                SizedBox(height: 16.h),
+              ],
+            ),
           ),
         ),
       ),
@@ -487,11 +558,11 @@ class HomeScreen extends StatelessWidget {
   Text label(String text) {
     return Text(
       text,
-                  style: AppTextTheme.bodyTextStyle.copyWith(
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.w700,
-                    color: AppColor.lightTextColor
-                  ),
-                );
+      style: AppTextTheme.bodyTextStyle.copyWith(
+        fontSize: 18.sp,
+        fontWeight: FontWeight.w700,
+        color: AppColor.lightTextColor,
+      ),
+    );
   }
 }

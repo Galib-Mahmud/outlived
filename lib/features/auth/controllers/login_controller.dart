@@ -53,14 +53,26 @@ class LoginController extends GetxController {
         await UserInfo.setRefreshToken(response['refresh'] ?? '');
 
         // Note: OUTLIVED login doesn't return user profile.
-        // You may want to call GET /me/ here to fetch user details if needed.
-        Get.to(HomeScreen()); // Change to your actual home route
+        // You may want to call GET /me here to fetch user details if needed.
+        Get.to(() => const HomeScreen());
       }
     } on UnauthorizedException {
       hasError.value = true;
       Get.snackbar("Error", "Invalid email or password", snackPosition: SnackPosition.BOTTOM);
+    } on NetworkException catch (e) {
+      // FIX: this catch was missing entirely. NetworkException (timeouts,
+      // no internet) is a distinct type from HttpException, so it wasn't
+      // caught before — it just propagated silently, leaving isLoading
+      // reset but no error shown and no navigation. This is very likely
+      // the "nothing happens" behavior being reported.
+      Get.snackbar("Error", e.message, snackPosition: SnackPosition.BOTTOM);
     } on HttpException catch (e) {
       Get.snackbar("Error", e.message, snackPosition: SnackPosition.BOTTOM);
+    } catch (e) {
+      // Catch-all so no future exception type can silently swallow
+      // navigation like this again.
+      Get.snackbar("Error", "Something went wrong. Please try again.", snackPosition: SnackPosition.BOTTOM);
+      debugPrint("LoginController.login unexpected error: $e");
     } finally {
       isLoading.value = false;
     }
@@ -77,6 +89,7 @@ class LoginController extends GetxController {
 
     isLoading.value = true;
     try {
+      int? statusCode;
       await _apiClient.post(
         ApiEndpoint.register,
         body: {
@@ -85,13 +98,28 @@ class LoginController extends GetxController {
           'password': signUpPasswordController.text,
         },
         requiresAuth: false,
+        onStatusCode: (code) => statusCode = code,
       );
 
-      await UserInfo.setUserEmail(signUpEmailController.text.trim());
-      Get.snackbar("Success", "OTP sent to your email!", snackPosition: SnackPosition.BOTTOM);
-      Get.to(OtpScreen());
+      // Only proceed to the OTP screen on the exact status the API doc
+      // specifies for a successful registration (201 Created). Any other
+      // 2xx would previously have navigated too, since post() only threw
+      // on 4xx/5xx — this makes the check explicit.
+      if (statusCode == 201) {
+        await UserInfo.setUserEmail(signUpEmailController.text.trim());
+        Get.snackbar("Success", "OTP sent to your email!", snackPosition: SnackPosition.TOP);
+        Get.to(() => const OtpScreen());
+      } else {
+        Get.snackbar("Error", "Unexpected response from server (status: $statusCode).", snackPosition: SnackPosition.BOTTOM);
+      }
+    } on NetworkException catch (e) {
+      // Same missing-catch bug as login() — see note there.
+      Get.snackbar("Error", e.message, snackPosition: SnackPosition.BOTTOM);
     } on HttpException catch (e) {
       Get.snackbar("Error", _extractMessage(e.body) ?? e.message, snackPosition: SnackPosition.BOTTOM);
+    } catch (e) {
+      Get.snackbar("Error", "Something went wrong. Please try again.", snackPosition: SnackPosition.BOTTOM);
+      debugPrint("LoginController.signUp unexpected error: $e");
     } finally {
       isLoading.value = false;
     }
@@ -107,12 +135,5 @@ class LoginController extends GetxController {
       }
     } catch (_) {}
     return null;
-  }
-
-  @override
-  void onClose() {
-    [emailController, passwordController, fullNameController, signUpEmailController, signUpPasswordController, signUpRePasswordController]
-        .forEach((c) => c.dispose());
-    super.onClose();
   }
 }
