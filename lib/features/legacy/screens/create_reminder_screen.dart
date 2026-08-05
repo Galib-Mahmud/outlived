@@ -46,7 +46,7 @@ class CreateReminderScreen extends StatelessWidget {
                     Container(
                       padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
                       decoration: BoxDecoration(
-                        color: AppColor.primaryColor, // Matches the dark brand theme green
+                        color: AppColor.primaryColor,
                         borderRadius: BorderRadius.circular(20.r),
                       ),
                       child: Row(
@@ -79,7 +79,7 @@ class CreateReminderScreen extends StatelessWidget {
                       controller: controller.messageController,
                       maxLines: 4,
                       style: AppTextTheme.bodyTextStyle.copyWith(color: AppColor.lightTextColor),
-                      decoration: _buildInputDecoration('Type your message...', null),
+                      decoration: _buildInputDecoration('Type your message...', null, controller),
                     ),
 
                     SizedBox(height: 20.h),
@@ -90,7 +90,7 @@ class CreateReminderScreen extends StatelessWidget {
                     TextFormField(
                       controller: controller.benefitCircleController,
                       style: AppTextTheme.bodyTextStyle.copyWith(color: AppColor.lightTextColor),
-                      decoration: _buildInputDecoration('Enter Name', 'assets/icons/contact.png'),
+                      decoration: _buildInputDecoration('Enter Name', 'assets/icons/contact.png', controller),
                     ),
 
                     SizedBox(height: 20.h),
@@ -159,14 +159,13 @@ class CreateReminderScreen extends StatelessWidget {
               ),
             ),
 
+            // Save Button with Loading State
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
-              child: RoundActionBtn(
-                onPressed: () {
-
-                },
-                text: 'Save Reminder',
-              ),
+              child: Obx(() => RoundActionBtn(
+                onPressed: controller.saveReminder,
+                text: controller.isLoading.value ? 'Saving...' : 'Save Reminder',
+              )),
             )
           ],
         ),
@@ -187,7 +186,7 @@ class CreateReminderScreen extends StatelessWidget {
     );
   }
 
-  InputDecoration _buildInputDecoration(String hint, String? suffixIcon) {
+  InputDecoration _buildInputDecoration(String hint, String? suffixIcon, CreateReminderController controller) {
     return InputDecoration(
       hintText: hint,
       hintStyle: AppTextTheme.bodyTextStyle.copyWith(
@@ -198,13 +197,20 @@ class CreateReminderScreen extends StatelessWidget {
       filled: true,
       suffixIcon: suffixIcon != null
           ? InkWell(
-        onTap: () {
-          Get.to(ContactSelectionScreen());
+        onTap: () async {
+          // Wait for the contact selection screen to return a result
+          final result = await Get.to(() => const ContactSelectionScreen());
+          if (result != null && result is String) {
+            controller.benefitCircleController.text = result;
+          }
         },
-        child: Image.asset(
-          suffixIcon,
-          width: 16.w,
-          height: 16.h,
+        child: Padding(
+          padding: EdgeInsets.all(12.r),
+          child: Image.asset(
+            suffixIcon,
+            width: 16.w,
+            height: 16.h,
+          ),
         ),
       )
           : null,

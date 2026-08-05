@@ -7,16 +7,13 @@ import 'package:get/get.dart';
 import 'package:outlive/core/theme/text_theme.dart';
 import 'package:outlive/core/universal_widgets/round_action_btn.dart';
 import '../../../core/theme/app_color.dart';
+import '../controllers/contact_controller.dart';
 
-// Controller to handle state form management reactively
 class CreateContactController extends GetxController {
   final nameController = TextEditingController();
   final numberController = TextEditingController();
-
-  // Radio option tracker string ('Muslim', 'Invite To Islam', or 'Memory')
   var selectedCategory = 'Muslim'.obs;
-
-
+  final RxBool isSaving = false.obs;
 
   @override
   void onClose() {
@@ -26,14 +23,45 @@ class CreateContactController extends GetxController {
   }
 
   Future<void> getContact() async {
-    final FlutterNativeContactPicker _contactPicker = FlutterNativeContactPicker();
-    Contact? contact = await _contactPicker.selectContact();
+    final FlutterNativeContactPicker contactPicker = FlutterNativeContactPicker();
+    Contact? contact = await contactPicker.selectContact();
 
     if (contact != null) {
       nameController.text = contact.fullName ?? '';
       numberController.text = contact.phoneNumbers?.isNotEmpty == true ? contact.phoneNumbers!.first : '';
     }
+  }
 
+  // FIX: this previously did nothing at all — the entered name, number,
+  // and category were discarded and the button had no onPressed logic.
+  Future<void> save() async {
+    final name = nameController.text.trim();
+    final phone = numberController.text.trim();
+
+    if (name.isEmpty || phone.isEmpty) {
+      Get.snackbar("Error", "Please enter a name and number", snackPosition: SnackPosition.BOTTOM);
+      return;
+    }
+
+    isSaving.value = true;
+    try {
+      final newContact = ContactModel(name: name, phone: phone, category: selectedCategory.value);
+
+      // NOTE: saves into the in-memory list ContactsScreen displays.
+      // The real backend's POST /contacts endpoint (per the API doc) has
+      // no dedicated category field — only a free-text "relationship"
+      // field — so this isn't synced to the server yet. Flag if you want
+      // it persisted there too (e.g. storing the category string in
+      // "relationship", or adding a real category field server-side).
+      if (Get.isRegistered<ContactController>()) {
+        Get.find<ContactController>().addContact(newContact);
+      }
+
+      Get.back();
+      Get.snackbar("Success", "Contact saved", snackPosition: SnackPosition.BOTTOM);
+    } finally {
+      isSaving.value = false;
+    }
   }
 }
 
@@ -52,8 +80,7 @@ class CreateContactScreen extends StatelessWidget {
           style: AppTextTheme.bodyTextStyle.copyWith(
               color: AppColor.lightTextColor,
               fontSize: 16.sp,
-              fontWeight: FontWeight.w600
-          ),
+              fontWeight: FontWeight.w600),
         ),
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios_new, color: AppColor.lightTextColor, size: 20.sp),
@@ -64,10 +91,9 @@ class CreateContactScreen extends StatelessWidget {
             margin: EdgeInsets.all(8.r),
             decoration: BoxDecoration(
                 color: AppColor.lightSurfaceColor,
-                shape: BoxShape.circle
-            ),
+                shape: BoxShape.circle),
             child: IconButton(
-              onPressed: (){},
+              onPressed: () {},
               icon: Icon(CupertinoIcons.bell, color: AppColor.lightTextSecondaryColor, size: 18.sp),
             ),
           )
@@ -84,19 +110,16 @@ class CreateContactScreen extends StatelessWidget {
                   children: [
                     SizedBox(height: 24.h),
 
-                    // Input A: Contact Name
                     _buildFieldLabel('Contact Name'),
                     SizedBox(height: 8.h),
                     TextFormField(
                       controller: controller.nameController,
                       style: AppTextTheme.bodyTextStyle.copyWith(color: AppColor.lightTextColor),
                       decoration: _buildInputDecoration('Enter Name', controller.getContact),
-
                     ),
 
                     SizedBox(height: 24.h),
 
-                    // Input B: Contact Number
                     _buildFieldLabel('Contact Number'),
                     SizedBox(height: 8.h),
                     TextFormField(
@@ -108,7 +131,6 @@ class CreateContactScreen extends StatelessWidget {
 
                     SizedBox(height: 24.h),
 
-                    // Input C: Category Row Segment
                     _buildFieldLabel('Category'),
                     SizedBox(height: 12.h),
 
@@ -130,9 +152,11 @@ class CreateContactScreen extends StatelessWidget {
 
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
-              child: RoundActionBtn(
-                onPressed: (){},
-                text: 'Save',
+              child: Obx(
+                    () => RoundActionBtn(
+                  onPressed: controller.save,
+                  text: controller.isSaving.value ? 'Saving...' : 'Save',
+                ),
               ),
             )
           ],
@@ -141,13 +165,11 @@ class CreateContactScreen extends StatelessWidget {
     );
   }
 
-  // --- Layout Helper Modules ---
-
   Widget _buildFieldLabel(String label) {
     return Text(
       label,
       style: AppTextTheme.bodyTextStyle.copyWith(
-        color: AppColor.lightTextColor.withOpacity(0.6), // Slightly muted header label style
+        color: AppColor.lightTextColor.withOpacity(0.6),
         fontSize: 15.sp,
         fontWeight: FontWeight.w500,
       ),
@@ -201,7 +223,7 @@ class CreateContactScreen extends StatelessWidget {
               shape: BoxShape.circle,
               border: Border.all(
                 color: isSelected ? AppColor.primaryColor : AppColor.lightTextTertiaryColor,
-                width: isSelected ? 5.r : 1.5.r, // Expands native inner fill ring natively
+                width: isSelected ? 5.r : 1.5.r,
               ),
               color: Colors.white,
             ),

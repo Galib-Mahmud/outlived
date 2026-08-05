@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:outlive/features/auth/screens/otp_screen.dart';
 import 'package:outlive/features/home/screens/home_screen.dart';
+import 'package:outlive/features/landing/screens/landing_screen.dart';
 import '../../../core/endpoint/api_client.dart';
 import '../../../core/endpoint/api_endpoint.dart';
 import '../../../core/storage/local_storage.dart';
@@ -54,7 +55,7 @@ class LoginController extends GetxController {
 
         // Note: OUTLIVED login doesn't return user profile.
         // You may want to call GET /me here to fetch user details if needed.
-        Get.to(() => const HomeScreen());
+        Get.to(() => const LandingScreen());
       }
     } on UnauthorizedException {
       hasError.value = true;

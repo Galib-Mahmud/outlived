@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:outlive/core/theme/text_theme.dart';
-import 'package:outlive/features/contacts/screens/create_contact_screen.dart';
 import '../../../core/theme/app_color.dart';
 import '../controllers/contact_controller.dart'; // Update path correctly
 
@@ -12,7 +11,6 @@ class ContactsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Injecting the dynamic Contact State Controller
     final controller = Get.put(ContactController());
 
     return Scaffold(
@@ -24,7 +22,7 @@ class ContactsScreen extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 24.w),
               child: TextFormField(
                 style: AppTextTheme.bodyTextStyle.copyWith(color: AppColor.lightTextColor),
-                onChanged: (value) => controller.searchQuery.value = value, // Updates stream queries
+                onChanged: (value) => controller.searchQuery.value = value,
                 decoration: InputDecoration(
                   hintText: 'Search Contact',
                   hintStyle: AppTextTheme.bodyTextStyle.copyWith(
@@ -45,7 +43,7 @@ class ContactsScreen extends StatelessWidget {
 
             SizedBox(height: 16.h),
 
-            // 3. Category Metrics Segment
+            // Category Metrics Segment
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 4.h),
@@ -79,9 +77,46 @@ class ContactsScreen extends StatelessWidget {
 
             SizedBox(height: 16.h),
 
-            // 4. Dynamically Filtering Grouped Contacts List
+            // Dynamically Filtering Grouped Contacts List
             Expanded(
               child: Obx(() {
+                if (controller.isLoading.value && controller.masterContacts.isEmpty) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (controller.errorMessage.value.isNotEmpty && controller.masterContacts.isEmpty) {
+                  return Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 32.w),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(CupertinoIcons.person_crop_circle_badge_exclam,
+                              color: AppColor.lightTextTertiaryColor, size: 36.sp),
+                          SizedBox(height: 12.h),
+                          Text(
+                            controller.errorMessage.value,
+                            textAlign: TextAlign.center,
+                            style: AppTextTheme.bodyTextStyle.copyWith(
+                              color: AppColor.lightTextTertiaryColor,
+                              fontSize: 13.sp,
+                            ),
+                          ),
+                          SizedBox(height: 12.h),
+                          TextButton(
+                            onPressed: controller.likelyPermanentlyDenied.value
+                                ? controller.openPermissionSettings
+                                : controller.fetchDeviceContacts,
+                            child: Text(
+                              controller.likelyPermanentlyDenied.value ? 'Open Settings' : 'Retry',
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }
+
                 final groups = controller.filteredGroupedContacts;
 
                 if (groups.isEmpty) {
@@ -96,73 +131,80 @@ class ContactsScreen extends StatelessWidget {
                   );
                 }
 
-                return ListView.builder(
-                  itemCount: groups.length,
-                  padding: EdgeInsets.zero,
-                  itemBuilder: (context, groupIndex) {
-                    final group = groups[groupIndex];
-                    final List<ContactModel> contactsInGroup = group['contacts'];
+                return RefreshIndicator(
+                  onRefresh: controller.fetchDeviceContacts,
+                  child: ListView.builder(
+                    itemCount: groups.length,
+                    padding: EdgeInsets.zero,
+                    itemBuilder: (context, groupIndex) {
+                      final group = groups[groupIndex];
+                      final List<ContactModel> contactsInGroup = group['contacts'];
 
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Letter Header Block Section
-                        Container(
-                          width: double.infinity,
-                          padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
-                          color: AppColor.lightSurfaceColor.withOpacity(0.4),
-                          child: Text(
-                            group['letter'] as String,
-                            style: AppTextTheme.bodyTextStyle.copyWith(
-                              color: AppColor.lightTextColor,
-                              fontSize: 16.sp,
-                              fontWeight: FontWeight.w700,
+                      // FIX 1: Added mainAxisSize: MainAxisSize.min to prevent the RenderFlex overflow
+                      return Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            width: double.infinity,
+                            padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
+                            color: AppColor.lightSurfaceColor.withOpacity(0.4),
+                            child: Text(
+                              group['letter'] as String,
+                              style: AppTextTheme.bodyTextStyle.copyWith(
+                                color: AppColor.lightTextColor,
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
                           ),
-                        ),
 
-                        // Items belonging to this letter group
-                        ListView.separated(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: contactsInGroup.length,
-                          padding: EdgeInsets.zero,
-                          separatorBuilder: (context, index) => Divider(
-                            height: 1.h,
-                            thickness: 1.h,
-                            color: AppColor.lightTextTertiaryColor.withOpacity(0.08),
-                          ),
-                          itemBuilder: (context, contactIndex) {
-                            final contact = contactsInGroup[contactIndex];
-                            return Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    contact.name,
-                                    style: AppTextTheme.bodyTextStyle.copyWith(
-                                      color: AppColor.lightTextColor,
-                                      fontSize: 15.sp,
-                                      fontWeight: FontWeight.w700,
-                                    ),
+                          // FIX 2: Replaced nested ListView with mapped columns for better performance
+                          ...contactsInGroup.asMap().entries.map((entry) {
+                            final index = entry.key;
+                            final contact = entry.value;
+                            final isLastItem = index == contactsInGroup.length - 1;
+
+                            return Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        contact.name,
+                                        style: AppTextTheme.bodyTextStyle.copyWith(
+                                          color: AppColor.lightTextColor,
+                                          fontSize: 15.sp,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                      Text(
+                                        contact.phone,
+                                        style: AppTextTheme.bodyTextStyle.copyWith(
+                                          color: AppColor.lightTextTertiaryColor,
+                                          fontSize: 14.sp,
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  Text(
-                                    contact.phone,
-                                    style: AppTextTheme.bodyTextStyle.copyWith(
-                                      color: AppColor.lightTextTertiaryColor,
-                                      fontSize: 14.sp,
-                                      fontWeight: FontWeight.w400,
-                                    ),
+                                ),
+                                if (!isLastItem)
+                                  Divider(
+                                    height: 1.h,
+                                    thickness: 1.h,
+                                    color: AppColor.lightTextTertiaryColor.withOpacity(0.08),
                                   ),
-                                ],
-                              ),
+                              ],
                             );
-                          },
-                        )
-                      ],
-                    );
-                  },
+                          }).toList(),
+                        ],
+                      );
+                    },
+                  ),
                 );
               }),
             ),
@@ -171,7 +213,6 @@ class ContactsScreen extends StatelessWidget {
       ),
     );
   }
-
 
   Widget _buildMetricCard({
     required String count,

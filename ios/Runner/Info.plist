@@ -17,6 +17,8 @@
 	<key>CFBundleName</key>
 	<string>outlive</string>
 	<key>CFBundlePackageType</key>
+	<key>NSContactsUsageDescription</key>
+    <string>OUTLIVED needs contacts access so you can add people to receive your reminders and deeds.</string>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
 	<string>$(FLUTTER_BUILD_NAME)</string>

@@ -1,20 +1,84 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import 'package:outlive/core/endpoint/api_client.dart';
+import 'package:outlive/core/endpoint/api_endpoint.dart';
+import 'package:outlive/features/legacy/screens/social_post_screen.dart'; // Adjust import if needed
 
 class PostDetailController extends GetxController {
-  // Reactive mock data models matching image_f2c782.png exactly
-  var postTitle = 'Prayer is the key to peace'.obs;
-  var scheduledTimeText = 'Scheduled : 11 May, 9:00 PM'.obs;
-  var savedCount = 3.obs;
-  var sharedCount = 8.obs;
+  final ApiClient _apiClient = ApiClient(baseUrl: ApiEndpoint.baseUrl);
 
-  var postContent = (
-      'Prayer is not just a ritual; it is a connection with Allah, a source of peace, and a light for the heart. 🤲🏼✨\n\n'
-          'No matter how difficult life becomes, return to your prayer — because true peace begins there.\n\n'
-          '#IslamicReminder #Prayer #Salah #Peace #Islam #Muslim #Quran #Deen #Allah #IslamicPost'
-  ).obs;
+  final RxBool isLoading = false.obs;
 
-  // Edit button action pipeline hook
+  var postTitle = ''.obs;
+  var mediaUrl = ''.obs;
+  var scheduledTimeText = ''.obs;
+  var savedCount = 0.obs;
+  var sharedCount = 0.obs;
+  var postContent = ''.obs;
+
+  String? deedId;
+
+  @override
+  void onInit() {
+    super.onInit();
+    // Retrieve the deedId passed from the LegacyScreen
+    if (Get.arguments != null && Get.arguments['deedId'] != null) {
+      deedId = Get.arguments['deedId'];
+      fetchDeedDetails();
+    } else {
+      Get.snackbar("Error", "No post ID provided", snackPosition: SnackPosition.BOTTOM);
+      Get.back();
+    }
+  }
+
+  Future<void> fetchDeedDetails() async {
+    if (deedId == null) return;
+    isLoading.value = true;
+
+    try {
+      // Call GET /deeds/{id}
+      final response = await _apiClient.get('${ApiEndpoint.deeds}/$deedId');
+
+      if (response != null) {
+        postTitle.value = response['title'] ?? '';
+        postContent.value = response['message_template'] ?? response['description'] ?? '';
+        mediaUrl.value = response['media_url'] ?? '';
+
+        // Map targets array length to "Shared by X people"
+        final targets = response['targets'] as List?;
+        sharedCount.value = targets?.length ?? 0;
+
+        // Parse ISO-8601 next_run_at to readable text
+        final nextRunStr = response['next_run_at'];
+        if (nextRunStr != null) {
+          final nextRun = DateTime.tryParse(nextRunStr);
+          if (nextRun != null) {
+            scheduledTimeText.value = 'Scheduled : ${DateFormat('d MMM, h:mm a').format(nextRun)}';
+          }
+        } else {
+          // Fallback if next_run_at is null (e.g. paused or completed deeds)
+          final status = response['status'];
+          scheduledTimeText.value = status == 'active' ? 'Active' : 'Paused';
+        }
+      }
+    } on NetworkException catch (e) {
+      Get.snackbar("Error", e.message, snackPosition: SnackPosition.BOTTOM);
+    } on HttpException catch (e) {
+      Get.snackbar("Error", e.message, snackPosition: SnackPosition.BOTTOM);
+    } catch (e) {
+      debugPrint("Fetch deed details error: $e");
+      Get.snackbar("Error", "Failed to load post details", snackPosition: SnackPosition.BOTTOM);
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
   void navigateToEditPost() {
-    // Get.to(() => const SocialPostScreen());
+    // Pass the deedId and an editing flag to the creation/edit screen
+    Get.to(() => const SocialPostScreen(), arguments: {
+      'deedId': deedId,
+      'isEditing': true,
+    });
   }
 }

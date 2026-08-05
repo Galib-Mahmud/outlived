@@ -29,6 +29,14 @@ class ApiEndpoint {
   static const String meProfileAvatar = "/me/profile/avatar";
   static const String meSettings     = "/me/settings";
   static const String meSubscription = "/me/subscription";
+  // Profile & Settings
+
+  static const String updateProfile = '/me/profile';
+  static const String uploadAvatar = '/me/profile/avatar';
+
+  // Social Connections
+  static const String connectFacebook = '/social/connections/facebook/connect-from-user-token';
+  static const String connectWhatsApp = '/social/connections/whatsapp/connect';
 
   // ─── Devices (push) ─────────────────────────────────────────────────
   // Single source of truth — the old file had both `meDevices` (with a
@@ -75,4 +83,6 @@ class ApiEndpoint {
   // ─── AI generation ───────────────────────────────────────────────────
   static const String aiGenerate    = "/ai/generate";
   static const String aiGenerations = "/ai/generations";
+
+
 }

@@ -15,14 +15,14 @@ class SocialPostScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        title: Text(
-          "Social Media Post",
+        title: Obx(() => Text(
+          controller.isEditing.value ? "Edit Post" : "Social Media Post",
           style: AppTextTheme.titleTextStyle.copyWith(
             color: AppColor.lightTextColor,
             fontSize: 16.sp,
             fontWeight: FontWeight.w700,
           ),
-        ),
+        )),
         leading: IconButton(
           onPressed: Get.back,
           icon: Icon(
@@ -33,178 +33,201 @@ class SocialPostScreen extends StatelessWidget {
         ),
       ),
       body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                padding: EdgeInsets.symmetric(horizontal: 24.w),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: 20.h),
+        child: Obx(() {
+          // Show loading spinner if fetching data for Edit Mode
+          if (controller.isLoading.value && controller.isEditing.value) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-                    // Section 1: Select Category Dropdown
-                    _buildFieldLabel('Select category'),
-                    SizedBox(height: 8.h),
-                    Obx(() => _buildDropdownField(
-                      value: controller.selectedCategory.value,
-                      items: controller.categories,
-                      onChanged: (val) => controller.selectedCategory.value = val!,
-                    )),
+          return Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.symmetric(horizontal: 24.w),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 20.h),
 
-                    SizedBox(height: 20.h),
+                      // Section 1: Select Category Dropdown
+                      _buildFieldLabel('Select category'),
+                      SizedBox(height: 8.h),
+                      Obx(() => _buildDropdownField(
+                        value: controller.selectedCategory.value,
+                        items: controller.categories,
+                        onChanged: (val) => controller.selectedCategory.value = val!,
+                      )),
 
-                    // Section 2: Post Content Box
-                    _buildFieldLabel('Post Content'),
-                    SizedBox(height: 8.h),
-                    TextFormField(
-                      controller: controller.contentController,
-                      maxLines: 5,
-                      style: AppTextTheme.bodyTextStyle.copyWith(color: AppColor.lightTextColor),
-                      decoration: InputDecoration(
-                        hintText: 'Type your content here...',
-                        hintStyle: AppTextTheme.bodyTextStyle.copyWith(
-                          color: AppColor.lightTextTertiaryColor.withOpacity(0.6),
-                          fontSize: 14.sp,
-                        ),
-                        fillColor: AppColor.lightSurfaceColor,
-                        filled: true,
-                        contentPadding: EdgeInsets.all(16.r),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12.r),
-                          borderSide: BorderSide.none,
+                      SizedBox(height: 20.h),
+
+                      // Section 2: Post Content Box
+                      _buildFieldLabel('Post Content'),
+                      SizedBox(height: 8.h),
+                      TextFormField(
+                        controller: controller.contentController,
+                        maxLines: 5,
+                        style: AppTextTheme.bodyTextStyle.copyWith(color: AppColor.lightTextColor),
+                        decoration: InputDecoration(
+                          hintText: 'Type your content here...',
+                          hintStyle: AppTextTheme.bodyTextStyle.copyWith(
+                            color: AppColor.lightTextTertiaryColor.withOpacity(0.6),
+                            fontSize: 14.sp,
+                          ),
+                          fillColor: AppColor.lightSurfaceColor,
+                          filled: true,
+                          contentPadding: EdgeInsets.all(16.r),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12.r),
+                            borderSide: BorderSide.none,
+                          ),
                         ),
                       ),
-                    ),
 
-                    SizedBox(height: 20.h),
+                      SizedBox(height: 20.h),
 
-                    // Section 3: Custom File Upload Row Box
-                    _buildFieldLabel('Upload'),
-                    SizedBox(height: 8.h),
-                    Container(
-                      width: double.infinity,
-                      padding: EdgeInsets.all(4.r),
-                      decoration: BoxDecoration(
-                        color: AppColor.lightSurfaceColor,
-                        borderRadius: BorderRadius.circular(10.r),
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                      // Section 3: Custom File Upload Row Box (Upgraded with Image Preview)
+                      _buildFieldLabel('Upload'),
+                      SizedBox(height: 8.h),
+                      Obx(() {
+                        ImageProvider? imageProvider;
+                        if (controller.mediaFile.value != null) {
+                          imageProvider = FileImage(controller.mediaFile.value!);
+                        } else if (controller.mediaUrl.value.isNotEmpty) {
+                          imageProvider = NetworkImage(controller.mediaUrl.value);
+                        }
+
+                        return GestureDetector(
+                          onTap: controller.pickImage,
+                          child: Container(
+                            width: double.infinity,
+                            height: 120.h,
                             decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(8.r),
-                              border: Border.all(color: AppColor.lightTextTertiaryColor.withOpacity(0.1)),
+                              color: AppColor.lightSurfaceColor,
+                              borderRadius: BorderRadius.circular(10.r),
+                              image: imageProvider != null
+                                  ? DecorationImage(image: imageProvider, fit: BoxFit.cover)
+                                  : null,
                             ),
-                            child: Text(
-                              'Choose your file',
-                              style: AppTextTheme.bodyTextStyle.copyWith(
-                                color: AppColor.lightTextSecondaryColor,
-                                fontSize: 13.sp,
-                                fontWeight: FontWeight.w500,
+                            child: imageProvider == null
+                                ? Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.add_photo_alternate_outlined, color: AppColor.lightTextTertiaryColor, size: 32.sp),
+                                  SizedBox(height: 8.h),
+                                  Text(
+                                    'Choose your file',
+                                    style: AppTextTheme.bodyTextStyle.copyWith(
+                                      color: AppColor.lightTextSecondaryColor,
+                                      fontSize: 13.sp,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
+                            )
+                                : null,
+                          ),
+                        );
+                      }),
+
+                      SizedBox(height: 20.h),
+
+                      // Section 4: Schedule This Post Split Row Picker
+                      _buildFieldLabel('Schedule This Post'),
+                      SizedBox(height: 8.h),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Obx(() => _buildPickerTile(
+                              text: controller.selectedDateText.value,
+                              icon: Icons.calendar_today_outlined,
+                              onTap: () => controller.pickDate(context),
+                            )),
+                          ),
+                          SizedBox(width: 16.w),
+                          Expanded(
+                            child: Obx(() => _buildPickerTile(
+                              text: controller.selectedTimeText.value,
+                              icon: Icons.access_time_rounded,
+                              onTap: () => controller.pickTime(context),
+                            )),
                           ),
                         ],
                       ),
-                    ),
 
-                    SizedBox(height: 20.h),
+                      SizedBox(height: 20.h),
 
-                    // Section 4: Schedule This Post Split Row Picker
-                    _buildFieldLabel('Schedule This Post'),
-                    SizedBox(height: 8.h),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Obx(() => _buildPickerTile(
-                            text: controller.selectedDateText.value,
-                            icon: Icons.calendar_today_outlined,
-                            onTap: () => controller.pickDate(context),
-                          )),
+                      // Section 5: Platform Dropdown
+                      _buildFieldLabel('Platform'),
+                      SizedBox(height: 8.h),
+                      Obx(() => _buildDropdownField(
+                        value: controller.selectedPlatform.value,
+                        items: controller.platforms,
+                        onChanged: (val) => controller.selectedPlatform.value = val!,
+                      )),
+
+                      SizedBox(height: 20.h),
+
+                      // Section 6: Continue Reward Multi-Segment Row
+                      _buildFieldLabel('Continue Reward'),
+                      SizedBox(height: 8.h),
+                      Container(
+                        padding: EdgeInsets.all(4.r),
+                        decoration: BoxDecoration(
+                          color: AppColor.lightSurfaceColor,
+                          borderRadius: BorderRadius.circular(10.r),
                         ),
-                        SizedBox(width: 16.w),
-                        Expanded(
-                          child: Obx(() => _buildPickerTile(
-                            text: controller.selectedTimeText.value,
-                            icon: Icons.access_time_rounded,
-                            onTap: () => controller.pickTime(context),
-                          )),
-                        ),
-                      ],
-                    ),
-
-                    SizedBox(height: 20.h),
-
-                    // Section 5: Platform Dropdown
-                    _buildFieldLabel('Platform'),
-                    SizedBox(height: 8.h),
-                    Obx(() => _buildDropdownField(
-                      value: controller.selectedPlatform.value,
-                      items: controller.platforms,
-                      onChanged: (val) => controller.selectedPlatform.value = val!,
-                    )),
-
-                    SizedBox(height: 20.h),
-
-                    // Section 6: Continue Reward Multi-Segment Row
-                    _buildFieldLabel('Continue Reward'),
-                    SizedBox(height: 8.h),
-                    Container(
-                      padding: EdgeInsets.all(4.r),
-                      decoration: BoxDecoration(
-                        color: AppColor.lightSurfaceColor,
-                        borderRadius: BorderRadius.circular(10.r),
-                      ),
-                      child: Obx(
-                            () => Row(
-                          children: [
-                            _buildIntervalTab('Daily', controller),
-                            _buildIntervalTab('Fridays', controller),
-                            _buildIntervalTab('Weekly', controller),
-                            _buildIntervalTab('Monthly', controller),
-                          ],
+                        child: Obx(
+                              () => Row(
+                            children: [
+                              _buildIntervalTab('Daily', controller),
+                              _buildIntervalTab('Fridays', controller),
+                              _buildIntervalTab('Weekly', controller),
+                              _buildIntervalTab('Monthly', controller),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
 
-                    SizedBox(height: 40.h),
-                  ],
-                ),
-              ),
-            ),
-
-            // Persistent Save Action Button
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
-              child: GestureDetector(
-                onTap: () {
-                  // Core submit flow triggers
-                },
-                child: Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.symmetric(vertical: 14.h),
-                  decoration: BoxDecoration(
-                    color: AppColor.primaryColor,
-                    borderRadius: BorderRadius.circular(24.r),
-                  ),
-                  child: Center(
-                    child: Text(
-                      'Save',
-                      style: AppTextTheme.bodyTextStyle.copyWith(
-                        color: Colors.white,
-                        fontSize: 15.sp,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
+                      SizedBox(height: 40.h),
+                    ],
                   ),
                 ),
               ),
-            ),
-          ],
-        ),
+
+              // Persistent Save Action Button
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
+                child: Obx(() => GestureDetector(
+                  onTap: controller.isLoading.value ? null : controller.savePost,
+                  child: Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.symmetric(vertical: 14.h),
+                    decoration: BoxDecoration(
+                      color: controller.isLoading.value
+                          ? AppColor.primaryColor.withOpacity(0.5)
+                          : AppColor.primaryColor,
+                      borderRadius: BorderRadius.circular(24.r),
+                    ),
+                    child: Center(
+                      child: Text(
+                        controller.isLoading.value
+                            ? 'Saving...'
+                            : (controller.isEditing.value ? 'Update Post' : 'Save'),
+                        style: AppTextTheme.bodyTextStyle.copyWith(
+                          color: Colors.white,
+                          fontSize: 15.sp,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ),
+                )),
+              ),
+            ],
+          );
+        }),
       ),
     );
   }

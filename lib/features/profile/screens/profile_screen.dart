@@ -9,6 +9,7 @@ import 'package:outlive/features/profile/screens/privacy_policy_screen.dart';
 import 'package:outlive/features/profile/screens/profile_update_screen.dart';
 import 'package:outlive/features/profile/screens/terms_conditions_screen.dart';
 import '../../../core/theme/app_color.dart';
+import '../controller/profile_controller.dart';
 import '../widgets/custom_switch.dart';
 import '../widgets/delete_bottom_sheet.dart';
 import 'faq_screen.dart';
@@ -18,6 +19,8 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.put(ProfileController());
+
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -26,22 +29,22 @@ class ProfileScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // User Header Card
-              Container(
+              Obx(() => Container(
                 width: double.infinity,
                 padding: EdgeInsets.all(20.r),
                 decoration: BoxDecoration(
-                  color: AppColor.lightSurfaceColor,
-                  borderRadius: BorderRadius.circular(20.r),
-                  border: Border.all(color: AppColor.lightBoarderColor , width: 1.w)
+                    color: AppColor.lightSurfaceColor,
+                    borderRadius: BorderRadius.circular(20.r),
+                    border: Border.all(color: AppColor.lightBoarderColor, width: 1.w)
                 ),
                 child: Row(
                   children: [
                     CircleAvatar(
                       radius: 30.r,
                       backgroundColor: AppColor.lightTextTertiaryColor.withOpacity(0.2),
-                      backgroundImage: const NetworkImage(
-                        'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=400', // Placeholder match
-                      ),
+                      backgroundImage: controller.avatarUrl.value.isNotEmpty
+                          ? NetworkImage(controller.avatarUrl.value)
+                          : const NetworkImage('https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=400'),
                     ),
                     SizedBox(width: 14.w),
                     Expanded(
@@ -49,7 +52,7 @@ class ProfileScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Kurt Cobain',
+                            controller.fullName.value,
                             style: AppTextTheme.bodyTextStyle.copyWith(
                               color: AppColor.lightTextColor,
                               fontSize: 18.sp,
@@ -58,7 +61,7 @@ class ProfileScreen extends StatelessWidget {
                           ),
                           SizedBox(height: 2.h),
                           Text(
-                            'Kurtcobain@email.com',
+                            controller.email.value,
                             style: AppTextTheme.bodyTextStyle.copyWith(
                               color: AppColor.lightTextTertiaryColor,
                               fontSize: 14.sp,
@@ -69,23 +72,24 @@ class ProfileScreen extends StatelessWidget {
                       ),
                     ),
                     // Active Status Tag
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
-                      decoration: BoxDecoration(
-                        color:AppColor.primaryColor,
-                        borderRadius: BorderRadius.circular(20.r),
-                      ),
-                      child: Text(
-                        'Active',
-                        style: AppTextTheme.bodyTextStyle.copyWith(
-                          color: Colors.white,
-                          fontSize: 14.sp,
+                    if (controller.isSubscriptionActive.value)
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                        decoration: BoxDecoration(
+                          color: AppColor.primaryColor,
+                          borderRadius: BorderRadius.circular(20.r),
+                        ),
+                        child: Text(
+                          'Active',
+                          style: AppTextTheme.bodyTextStyle.copyWith(
+                            color: Colors.white,
+                            fontSize: 14.sp,
+                          ),
                         ),
                       ),
-                    ),
                   ],
                 ),
-              ),
+              )),
 
               SizedBox(height: 20.h),
 
@@ -94,15 +98,13 @@ class ProfileScreen extends StatelessWidget {
                 title: 'Profile',
                 children: [
                   _buildMenuRow(
-                    label: 'Profile Update',
-                      onTap: () => Get.to(ProfileUpdateScreen())
+                      label: 'Profile Update',
+                      onTap: () => Get.to(() => const ProfileUpdateScreen())
                   ),
                   SizedBox(height: 12.h),
                   _buildMenuRow(
                     label: 'Create Content Account',
-                    onTap: () => Get.to(CreateAccountScreen(
-                      isFromSettings: true,
-                    )),
+                    onTap: () => Get.to(() => CreateAccountScreen(isFromSettings: true)),
                   ),
                 ],
               ),
@@ -114,18 +116,19 @@ class ProfileScreen extends StatelessWidget {
                 title: 'Account',
                 children: [
                   _buildMenuRow(
-                    label: 'Change Password',
-                      onTap: () => Get.to(ChangePasswordScreen())
+                      label: 'Change Password',
+                      onTap: () => Get.to(() => const ChangePasswordScreen())
+                  ),
+                  SizedBox(height: 12.h),
+                  _buildMenuRow(
+                    label: 'Logout',
+                    onTap: () => _showLogoutDialog(controller),
                   ),
                   SizedBox(height: 12.h),
                   _buildMenuRow(
                     label: 'Delete Account',
-                    onTap: (){
-                      Get.bottomSheet(
-                        DeleteBottomSheet(),
-                        isScrollControlled: true,
-                      );
-                    }
+                    onTap: () => _showDeleteDialog(controller),
+                    textColor: Colors.red, // Visual cue for destructive action
                   ),
                 ],
               ),
@@ -136,31 +139,31 @@ class ProfileScreen extends StatelessWidget {
               _buildSettingsGroup(
                 title: 'More',
                 children: [
-                  _buildMenuRowWithToggle(
-                    label: 'Daily Prayer Remainder',
-                    value: true, // Use controller.isPrayerReminderEnabled.value with Obx dynamically
-                    onChanged: (val) {},
-                  ),
+                  // Obx(() => _buildMenuRowWithToggle(
+                  //   label: 'Daily Prayer Remainder',
+                  //   value: controller.isPrayerReminderEnabled.value,
+                  //   onChanged: controller.togglePrayerReminder,
+                  // )),
                   SizedBox(height: 12.h),
-                  _buildMenuRowWithToggle(
-                    label: 'Notification Preferences',
-                    value: false,
-                    onChanged: (val) {},
+                  // Obx(() => _buildMenuRowWithToggle(
+                  //   label: 'Notification Preferences',
+                  //   value: controller.isPushNotificationEnabled.value,
+                  //   onChanged: controller.togglePushNotifications,
+                  // )),
+                  SizedBox(height: 12.h),
+                  _buildMenuRow(
+                      label: 'Terms & Conditions',
+                      onTap: () => Get.to(() => const TermsConditionsScreen())
                   ),
                   SizedBox(height: 12.h),
                   _buildMenuRow(
-                    label: 'Terms & Conditions',
-                      onTap: () => Get.to(TermsConditionsScreen())
+                      label: 'Privacy Policy',
+                      onTap: () => Get.to(() => const PrivacyPolicyScreen())
                   ),
                   SizedBox(height: 12.h),
                   _buildMenuRow(
-                    label: 'Privacy Policy',
-                      onTap: () => Get.to(PrivacyPolicyScreen())
-                  ),
-                  SizedBox(height: 12.h),
-                  _buildMenuRow(
-                    label: "Faq's",
-                    onTap: () => Get.to(FAQScreen())
+                      label: "Faq's",
+                      onTap: () => Get.to(() => const FAQScreen())
                   ),
                 ],
               ),
@@ -171,6 +174,37 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
+  // --- Dialogs for Destructive Actions ---
+
+  void _showLogoutDialog(ProfileController controller) {
+    Get.defaultDialog(
+      title: "Logout",
+      middleText: "Are you sure you want to logout?",
+      textConfirm: "Logout",
+      textCancel: "Cancel",
+      confirmTextColor: Colors.white,
+      onConfirm: () {
+        Get.back(); // Close dialog
+        controller.logout();
+      },
+    );
+  }
+
+  void _showDeleteDialog(ProfileController controller) {
+    Get.defaultDialog(
+      title: "Delete Account",
+      middleText: "This action cannot be undone. All your data will be permanently deleted. Are you sure?",
+      textConfirm: "Delete",
+      textCancel: "Cancel",
+      confirmTextColor: Colors.white,
+      buttonColor: Colors.red,
+      onConfirm: () {
+        Get.back(); // Close dialog
+        controller.deleteAccount();
+      },
+    );
+  }
+
   // --- Layout Component Helpers ---
 
   Widget _buildSettingsGroup({required String title, required List<Widget> children}) {
@@ -178,9 +212,9 @@ class ProfileScreen extends StatelessWidget {
       width: double.infinity,
       padding: EdgeInsets.all(16.r),
       decoration: BoxDecoration(
-        color: AppColor.lightSurfaceColor,
-        borderRadius: BorderRadius.circular(20.r),
-          border: Border.all(color: AppColor.lightBoarderColor , width: 1.w)
+          color: AppColor.lightSurfaceColor,
+          borderRadius: BorderRadius.circular(20.r),
+          border: Border.all(color: AppColor.lightBoarderColor, width: 1.w)
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -200,7 +234,7 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildMenuRow({required String label, required VoidCallback onTap}) {
+  Widget _buildMenuRow({required String label, required VoidCallback onTap, Color? textColor}) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -215,14 +249,14 @@ class ProfileScreen extends StatelessWidget {
             Text(
               label,
               style: AppTextTheme.bodyTextStyle.copyWith(
-                color: AppColor.lightTextColor,
+                color: textColor ?? AppColor.lightTextColor,
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w700,
               ),
             ),
             Icon(
               Icons.arrow_forward_ios_rounded,
-              color: AppColor.lightTextColor,
+              color: textColor ?? AppColor.lightTextColor,
               size: 16.sp,
             ),
           ],
@@ -262,4 +296,3 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 }
-
