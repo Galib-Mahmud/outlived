@@ -1,15 +1,7 @@
 // lib/core/endpoint/api_endpoint.dart
 
 class ApiEndpoint {
-  // TODO — CONFIRM BEFORE SHIPPING:
-  // The API doc's base is 'https://api.outlived.ai/api/v1' (note the /v1).
-  // This constant previously had a comment claiming '/v1' was included, but
-  // it wasn't in the actual string. If this host is your real staging
-  // server and it follows the same versioned spec, it needs /v1 appended:
-  //   static const String baseUrl = 'https://outlivedapi.dsrt321.online/api/v1';
-  // Left unchanged here until confirmed — every endpoint below assumes
-  // NO trailing slash on baseUrl and NO trailing slash on the paths
-  // (matching the documented spec), so fix this before relying on it.
+  // Confirmed against a real successful call (POST /auth/register -> 201).
   static const String baseUrl = 'https://api.outlived.ai/api/v1';
 
   // ─── Auth ──────────────────────────────────────────────────────────
@@ -23,26 +15,24 @@ class ApiEndpoint {
   static const String changePassword = "/auth/change-password";
   static const String logout         = "/auth/logout";
 
+  // Confirmed: POST /auth/facebook (public) — verifies the token via Graph
+  // API, maps to an account by facebook_id -> email -> new user, and
+  // returns {access, refresh, created, user} same as /auth/login plus
+  // `created`. Separate from the Page-connection flow in §6.
+  static const String loginFacebook  = "/auth/facebook";
+
   // ─── Profile & Settings ────────────────────────────────────────────
-  static const String me             = "/me";
-  static const String meProfile      = "/me/profile";
+  // FIX: this file previously had two names for the same two paths
+  // (updateProfile/uploadAvatar duplicating meProfile/meProfileAvatar).
+  // Consolidated to one canonical name each — use these everywhere.
+  static const String me              = "/me";
+  static const String meProfile       = "/me/profile";
   static const String meProfileAvatar = "/me/profile/avatar";
-  static const String meSettings     = "/me/settings";
-  static const String meSubscription = "/me/subscription";
-  // Profile & Settings
-
-  static const String updateProfile = '/me/profile';
-  static const String uploadAvatar = '/me/profile/avatar';
-
-  // Social Connections
-  static const String connectFacebook = '/social/connections/facebook/connect-from-user-token';
-  static const String connectWhatsApp = '/social/connections/whatsapp/connect';
+  static const String meSettings      = "/me/settings";
+  static const String meSubscription  = "/me/subscription";
 
   // ─── Devices (push) ─────────────────────────────────────────────────
-  // Single source of truth — the old file had both `meDevices` (with a
-  // trailing slash) and `registerDevice` (without) pointing at the same
-  // path. Consolidated to one.
-  static const String devices         = "/me/devices";
+  static const String devices           = "/me/devices";
   static const String devicesUnregister = "/me/devices/unregister";
 
   // ─── Core Features ──────────────────────────────────────────────────
@@ -59,18 +49,21 @@ class ApiEndpoint {
   static String reminderResume(String id) => "/reminders/$id/resume";
 
   // ─── Subscriptions & Plans ──────────────────────────────────────────
-  static const String plans               = "/plans";
+  static const String plans                = "/plans";
   static const String subscriptionCheckout = "/subscriptions/checkout";
   static const String subscriptionCancel   = "/subscriptions/cancel";
 
   // ─── Social Connections ─────────────────────────────────────────────
+  // FIX: connectFacebook/connectWhatsApp duplicated
+  // socialConnectFacebook/socialConnectWhatsApp — same paths, two names.
+  // Consolidated to these canonical ones.
   static const String socialConnections = "/social/connections";
   static const String socialConnectFacebook =
       "/social/connections/facebook/connect-from-user-token";
   static const String socialConnectWhatsApp = "/social/connections/whatsapp/connect";
 
   // Generic — spec defines disconnect per-platform (facebook|instagram|whatsapp),
-  // not just whatsapp. The old constant only covered whatsapp.
+  // not just whatsapp.
   static String socialDisconnect(String platform) =>
       "/social/connections/$platform/disconnect";
 
@@ -83,6 +76,4 @@ class ApiEndpoint {
   // ─── AI generation ───────────────────────────────────────────────────
   static const String aiGenerate    = "/ai/generate";
   static const String aiGenerations = "/ai/generations";
-
-
 }

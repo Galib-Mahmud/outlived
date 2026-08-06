@@ -7,6 +7,7 @@ import 'package:outlive/core/universal_widgets/custom_label.dart';
 import 'package:outlive/core/universal_widgets/custom_text_field.dart';
 import '../../../core/theme/app_color.dart';
 import '../../../core/universal_widgets/action_button.dart';
+import '../controllers/facebook_controller.dart';
 import '../controllers/login_controller.dart';
 import '../widgets/tab_btn.dart';
 import 'forget_password_screen.dart';
@@ -65,10 +66,39 @@ class LoginScreen extends StatelessWidget {
                   return _buildSignUpForm(controller);
                 }
               }),
+
+              // Facebook sign-in is offered on both tabs, since it serves
+              // as either login or signup depending on whether the backend
+              // reports the account as newly created.
+              SizedBox(height: 24.h),
+              _buildDivider(),
+              SizedBox(height: 20.h),
+              const _FacebookLoginButton(),
+              SizedBox(height: 24.h),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildDivider() {
+    return Row(
+      children: [
+        Expanded(child: Divider(color: AppColor.lightBoarderColor)),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 12.w),
+          child: Text(
+            'OR',
+            style: AppTextTheme.bodyTextStyle.copyWith(
+              color: AppColor.lightTextTertiaryColor,
+              fontSize: 12.sp,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+        Expanded(child: Divider(color: AppColor.lightBoarderColor)),
+      ],
     );
   }
 
@@ -146,13 +176,6 @@ class LoginScreen extends StatelessWidget {
               : const SizedBox.shrink(),
         ),
         SizedBox(height: 32.h),
-
-        // FIX: this previously navigated straight to LandingScreen and
-        // never called controller.login() — meaning the API call,
-        // validation, token storage, and error handling never ran.
-        // Now it calls the controller, and disables/shows a spinner
-        // while isLoading is true so a slow network can't cause a
-        // double-tap double-submit.
         Obx(
               () => ActionButton(
             text: controller.isLoading.value ? 'Logging in...' : 'Login',
@@ -220,7 +243,6 @@ class LoginScreen extends StatelessWidget {
           ),
         ),
         SizedBox(height: 32.h),
-
         Obx(
               () => ActionButton(
             text: controller.isLoading.value ? 'Signing up...' : 'Sign Up',
@@ -228,6 +250,52 @@ class LoginScreen extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _FacebookLoginButton extends StatelessWidget {
+  const _FacebookLoginButton();
+
+  @override
+  Widget build(BuildContext context) {
+    final controller = Get.put(FacebookAuthController());
+
+    return Obx(
+          () => SizedBox(
+        width: double.infinity,
+        height: 50.h,
+        child: OutlinedButton(
+          onPressed: controller.isLoading.value ? null : controller.loginWithFacebook,
+          style: OutlinedButton.styleFrom(
+            side: BorderSide(color: AppColor.lightBoarderColor),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12.r),
+            ),
+          ),
+          child: controller.isLoading.value
+              ? SizedBox(
+            width: 20.w,
+            height: 20.h,
+            child: const CircularProgressIndicator(strokeWidth: 2),
+          )
+              : Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.facebook, color: const Color(0xFF1877F2), size: 20.sp),
+              SizedBox(width: 10.w),
+              Text(
+                'Continue with Facebook',
+                style: AppTextTheme.bodyTextStyle.copyWith(
+                  color: AppColor.lightTextColor,
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

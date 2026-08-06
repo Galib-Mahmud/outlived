@@ -14,18 +14,18 @@ dependencies:
   flutter:
     sdk: flutter
 
-  cupertino_icons: ^1.0.8
-  flutter_screenutil: ^5.9.3
+  cupertino_icons:
+  flutter_screenutil:
   get:
-  gradient_borders: ^1.0.4
+  gradient_borders:
   flutter_facebook_auth:
   firebase_messaging:
   image_picker:
   intl:
   flutter_contacts:
 
-  permission_handler: ^12.0.3
-  flutter_native_contact_picker: ^0.0.12
+  permission_handler:
+  flutter_native_contact_picker:
   http:
   shared_preferences:
 
@@ -35,7 +35,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  flutter_lints: ^6.0.0
+  flutter_lints:
 
 
 flutter:

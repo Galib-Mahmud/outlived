@@ -30,6 +30,12 @@ class ProfileUpdateController extends GetxController {
         addressController.text = res['profile']?['address'] ?? '';
         currentAvatarUrl.value = res['profile']?['avatar'] ?? '';
       }
+    } on HttpException catch (e) {
+      debugPrint("Error fetching user data: ${e.message}");
+      Get.snackbar("Error", "Failed to load profile data", snackPosition: SnackPosition.BOTTOM);
+    } on NetworkException catch (e) {
+      debugPrint("Error fetching user data: ${e.message}");
+      Get.snackbar("Error", e.message, snackPosition: SnackPosition.BOTTOM);
     } catch (e) {
       debugPrint("Error fetching user data: $e");
       Get.snackbar("Error", "Failed to load profile data", snackPosition: SnackPosition.BOTTOM);
@@ -54,18 +60,21 @@ class ProfileUpdateController extends GetxController {
     try {
       // 1. Upload Avatar if a new image was selected
       if (avatarFile.value != null) {
-        // FIX: Changed uploadMultipart to multipart to match your ApiClient
+        // FIX: ApiEndpoint.uploadAvatar was removed as a duplicate of
+        // meProfileAvatar (same path, two names) — using the canonical one.
         await _apiClient.multipart(
-          ApiEndpoint.uploadAvatar,
-          method: 'POST', // Your ApiClient requires the HTTP verb
-          files: {'avatar': avatarFile.value!}, // Maps the field name 'avatar' to the File
+          ApiEndpoint.meProfileAvatar,
+          method: 'POST',
+          files: {'avatar': avatarFile.value!},
           requiresAuth: true,
         );
       }
 
       // 2. Update Profile Details
+      // FIX: ApiEndpoint.updateProfile was removed as a duplicate of
+      // meProfile — using the canonical one.
       await _apiClient.patch(
-        ApiEndpoint.updateProfile,
+        ApiEndpoint.meProfile,
         body: {
           'address': addressController.text.trim(),
           'full_name': fullNameController.text.trim(),
@@ -73,7 +82,16 @@ class ProfileUpdateController extends GetxController {
       );
 
       Get.snackbar("Success", "Profile updated successfully!", snackPosition: SnackPosition.BOTTOM);
-      Get.back(); // Return to Profile Screen
+      Get.back();
+    } on HttpException catch (e) {
+      // FIX: was a generic catch(e) that always showed the same message
+      // regardless of cause — your API doc specifically calls out avatar
+      // size/type validation errors here, so surface the real message.
+      Get.snackbar("Error", e.message, snackPosition: SnackPosition.BOTTOM);
+      debugPrint("Save changes error: ${e.message}");
+    } on NetworkException catch (e) {
+      Get.snackbar("Error", e.message, snackPosition: SnackPosition.BOTTOM);
+      debugPrint("Save changes error: ${e.message}");
     } catch (e) {
       Get.snackbar("Error", "Failed to update profile. Please try again.", snackPosition: SnackPosition.BOTTOM);
       debugPrint("Save changes error: $e");
@@ -96,21 +114,29 @@ class ProfileUpdateController extends GetxController {
       ]);
 
       if (result.status == LoginStatus.success) {
-        final userToken = result.accessToken!.tokenString;
+        final userToken = result.accessToken?.tokenString;
+        if (userToken == null) {
+          Get.snackbar("Error", "Failed to retrieve Facebook token.", snackPosition: SnackPosition.BOTTOM);
+          return;
+        }
 
+        // FIX: ApiEndpoint.connectFacebook was removed as a duplicate of
+        // socialConnectFacebook — using the canonical one.
         var res = await _apiClient.post(
-          ApiEndpoint.connectFacebook,
+          ApiEndpoint.socialConnectFacebook,
           body: {'access_token': userToken, 'include_instagram': includeInstagram},
         );
 
-        // Handle Edge Case: User has multiple Pages and needs to select one
-        if (res['needs_selection'] == true) {
+        // FIX: accessed res['needs_selection'] without checking res is a
+        // Map first — matches the defensive check used in
+        // SocialConnectController/HomeController.
+        if (res is Map<String, dynamic> && res['needs_selection'] == true) {
           final pages = res['pages'] as List;
           final selectedPageId = await _showPagePickerDialog(pages);
 
           if (selectedPageId != null) {
             res = await _apiClient.post(
-              ApiEndpoint.connectFacebook,
+              ApiEndpoint.socialConnectFacebook,
               body: {
                 'access_token': userToken,
                 'include_instagram': includeInstagram,
@@ -119,7 +145,6 @@ class ProfileUpdateController extends GetxController {
             );
           } else {
             Get.snackbar("Cancelled", "Page selection cancelled.", snackPosition: SnackPosition.BOTTOM);
-            isLoading.value = false;
             return;
           }
         }
@@ -129,6 +154,12 @@ class ProfileUpdateController extends GetxController {
       } else {
         Get.snackbar("Cancelled", "Login cancelled.", snackPosition: SnackPosition.BOTTOM);
       }
+    } on HttpException catch (e) {
+      Get.snackbar("Error", e.message, snackPosition: SnackPosition.BOTTOM);
+      debugPrint("Social Connect error: ${e.message}");
+    } on NetworkException catch (e) {
+      Get.snackbar("Error", e.message, snackPosition: SnackPosition.BOTTOM);
+      debugPrint("Social Connect error: ${e.message}");
     } catch (e) {
       Get.snackbar("Error", "Failed to connect account.", snackPosition: SnackPosition.BOTTOM);
       debugPrint("Social Connect error: $e");
@@ -140,8 +171,16 @@ class ProfileUpdateController extends GetxController {
   Future<void> connectWhatsApp() async {
     isLoading.value = true;
     try {
-      await _apiClient.post(ApiEndpoint.connectWhatsApp, body: {});
+      // FIX: ApiEndpoint.connectWhatsApp was removed as a duplicate of
+      // socialConnectWhatsApp — using the canonical one.
+      await _apiClient.post(ApiEndpoint.socialConnectWhatsApp, body: {});
       Get.snackbar("Success", "WhatsApp opted-in!", snackPosition: SnackPosition.BOTTOM);
+    } on HttpException catch (e) {
+      Get.snackbar("Error", e.message, snackPosition: SnackPosition.BOTTOM);
+      debugPrint("WA Connect error: ${e.message}");
+    } on NetworkException catch (e) {
+      Get.snackbar("Error", e.message, snackPosition: SnackPosition.BOTTOM);
+      debugPrint("WA Connect error: ${e.message}");
     } catch (e) {
       Get.snackbar("Error", "Failed to connect WhatsApp.", snackPosition: SnackPosition.BOTTOM);
       debugPrint("WA Connect error: $e");
