@@ -23,7 +23,13 @@ class LegacyMessageModel {
     required this.isUpcoming,
   });
 
-  // Maps the OUTLIVED API 'Deed' response to our UI Model
+  // NOTE: this maps a Deed (a recurring rule) to a UI row. Per the API doc
+  // §10, /deliveries is the actual per-message history log (with a real
+  // delivered_at timestamp) that backs "activity" screens — /deeds only
+  // exposes each rule's single next occurrence. If this screen is meant to
+  // show a true history of individually sent messages, it likely needs to
+  // read from /deliveries instead. Left as /deeds since that's what was
+  // already here — flagging for a product/architecture decision.
   factory LegacyMessageModel.fromDeedJson(Map<String, dynamic> json) {
     final String id = json['id'] ?? '';
     final String title = json['title'] ?? '';
@@ -31,13 +37,11 @@ class LegacyMessageModel {
     final String frequency = json['frequency'] ?? 'custom';
     final String status = json['status'] ?? 'active';
 
-    // Parse next_run_at
     DateTime? nextRun;
     if (json['next_run_at'] != null) {
       nextRun = DateTime.tryParse(json['next_run_at']);
     }
 
-    // Parse targets for recipients (e.g., "Sarah and 45 People")
     final List<dynamic> targets = json['targets'] ?? [];
     String recipients = '0 People';
     if (targets.isNotEmpty) {
@@ -48,10 +52,8 @@ class LegacyMessageModel {
       }
     }
 
-    // Map frequency to UI chip
     String scheduleType = frequency.capitalizeFirst ?? 'Custom';
 
-    // Determine isUpcoming and format time/group headers
     bool isUpcoming = status == 'active' && nextRun != null && nextRun.isAfter(DateTime.now());
     String timeText = '';
     String groupHeader = '';
@@ -96,7 +98,6 @@ class LegacyMessageModel {
 class LegacyController extends GetxController {
   final ApiClient _apiClient = ApiClient(baseUrl: ApiEndpoint.baseUrl);
 
-  // Scroll Controller for infinite scrolling
   final scrollController = ScrollController();
 
   var selectedTab = 1.obs;
@@ -104,7 +105,6 @@ class LegacyController extends GetxController {
 
   final RxList<LegacyMessageModel> masterMessages = <LegacyMessageModel>[].obs;
 
-  // Pagination & Loading States
   final RxBool isLoading = false.obs;
   final RxBool isLoadingMore = false.obs;
   final RxBool hasMoreData = true.obs;
@@ -134,7 +134,6 @@ class LegacyController extends GetxController {
     }
 
     try {
-      // Fetch from GET /deeds with pagination
       final response = await _apiClient.get(
           '${ApiEndpoint.deeds}?page=$_currentPage&page_size=$_pageSize'
       );
@@ -173,12 +172,39 @@ class LegacyController extends GetxController {
     }
   }
 
+  // FIX: this deletes the entire recurring deed (all future occurrences),
+  // not just the one message row the user tapped — added a confirmation
+  // dialog explaining that, since the original had none and this is
+  // effectively a destructive, irreversible action from the user's
+  // perspective. Also preserved the real error message instead of a
+  // generic catch(e), matching the pattern used elsewhere in the app.
   Future<void> deleteMessage(String id) async {
+    final confirmed = await Get.dialog<bool>(
+      AlertDialog(
+        title: const Text('Delete this deed?'),
+        content: const Text(
+          'This cancels the entire recurring series, not just this one message. '
+              'This can\'t be undone.',
+        ),
+        actions: [
+          TextButton(onPressed: () => Get.back(result: false), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Get.back(result: true),
+            child: const Text('Delete', style: TextStyle(color: Color(0xFFD32F2F))),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+
     try {
-      // Call DELETE /deeds/{id}
-      await _apiClient.delete('${ApiEndpoint.deeds}/$id');
+      await _apiClient.delete(ApiEndpoint.deedDetail(id));
       masterMessages.removeWhere((msg) => msg.id == id);
       Get.snackbar("Success", "Deed deleted successfully", snackPosition: SnackPosition.BOTTOM);
+    } on HttpException catch (e) {
+      Get.snackbar("Error", e.message, snackPosition: SnackPosition.BOTTOM);
+    } on NetworkException catch (e) {
+      Get.snackbar("Error", e.message, snackPosition: SnackPosition.BOTTOM);
     } catch (e) {
       Get.snackbar("Error", "Failed to delete deed", snackPosition: SnackPosition.BOTTOM);
     }

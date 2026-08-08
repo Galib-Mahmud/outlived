@@ -1,5 +1,6 @@
 // lib/features/auth/controllers/facebook_auth_controller.dart
 
+import 'dart:developer' as developer;
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:get/get.dart';
 import 'package:outlive/core/endpoint/api_client.dart';
@@ -10,11 +11,6 @@ import '../../../core/storage/local_storage.dart';
 class FacebookAuthController extends GetxController {
   var isLoading = false.obs;
 
-  // FIX: Get.find<ApiClient>() would throw at runtime — nothing in this
-  // codebase registers ApiClient via Get.put(). Every other controller
-  // (LoginController, HomeController, SocialConnectController,
-  // ForgotPasswordController) instantiates its own ApiClient directly, so
-  // this matches that same pattern instead of assuming DI that isn't set up.
   final ApiClient _apiClient = ApiClient(baseUrl: ApiEndpoint.baseUrl);
 
   Future<void> loginWithFacebook() async {
@@ -24,6 +20,14 @@ class FacebookAuthController extends GetxController {
         permissions: ['public_profile', 'email'],
       );
 
+      // DEBUG: tells us immediately if the Facebook SDK step itself is
+      // the problem (bad key hash / app not live / permissions denied)
+      // vs. something after it. Remove once the flow is confirmed working.
+      developer.log(
+        'FB LOGIN RESULT: status=${result.status}, message=${result.message}',
+        name: 'FacebookAuth',
+      );
+
       if (result.status == LoginStatus.success) {
         final userToken = result.accessToken?.tokenString;
         if (userToken == null) {
@@ -31,18 +35,17 @@ class FacebookAuthController extends GetxController {
           return;
         }
 
-        // NOTE: ApiEndpoint.loginFacebook ('/auth/facebook') is not in the
-        // documented API spec — confirm it exists on the backend before
-        // relying on this in production.
         final raw = await _apiClient.post(
           ApiEndpoint.loginFacebook,
           requiresAuth: false,
           body: {'access_token': userToken},
         );
 
-        // FIX: was an unchecked `as Map<String, dynamic>` cast — if the
-        // server ever returned something else (empty body, a list), this
-        // would throw a raw TypeError. Now it fails with a clear message.
+        // DEBUG: shows exactly what the backend sent back, including if
+        // it's an error shape your `is! Map<String, dynamic>` check would
+        // otherwise mask as a generic "Unexpected response" snackbar.
+        developer.log('BACKEND RAW RESPONSE: $raw', name: 'FacebookAuth');
+
         if (raw is! Map<String, dynamic>) {
           Get.snackbar("Error", "Unexpected response from server.");
           return;
@@ -66,16 +69,12 @@ class FacebookAuthController extends GetxController {
         if (user['full_name'] != null) await UserInfo.setFullName(user['full_name']);
         if (user['role'] != null) await UserInfo.setRole(user['role']);
 
-        // FIX: both branches were `// TODO` — meaning a successful Facebook
-        // login stored tokens but never navigated anywhere, identical to
-        // the earlier "silent success, nothing happens" bug. Using
-        // Get.offAll (not Get.to) so the login/signup screen doesn't
-        // remain in the back stack after a successful auth.
-        //
-        // Both currently go to LandingScreen, matching what the regular
-        // email/password login() does today. If newly-created Facebook
-        // users should land on a separate onboarding/profile-setup screen
-        // instead, point me at it and I'll split this branch.
+        // DEBUG: confirms the write actually landed in SharedPreferences
+        // before we navigate away. If this prints null, the problem is in
+        // UserInfo.init() timing, not this controller.
+        final stored = await UserInfo.getAccessToken();
+        developer.log('TOKEN AFTER STORE: $stored', name: 'FacebookAuth');
+
         if (created) {
           Get.offAll(() => const LandingScreen());
         } else {
@@ -87,14 +86,15 @@ class FacebookAuthController extends GetxController {
         Get.snackbar("Login Failed", result.message ?? "An error occurred with Facebook.");
       }
     } on ForbiddenException {
-      // Doc explicitly calls out "inactive accounts → 403" as a distinct
-      // case — worth a clearer message than the generic "Access denied."
       Get.snackbar("Login Failed", "This account is inactive. Please contact support.");
     } on HttpException catch (e) {
       Get.snackbar("Login Failed", e.message);
     } on NetworkException catch (e) {
       Get.snackbar("Network Error", e.message);
-    } catch (e) {
+    } catch (e, stackTrace) {
+      // FIX: was `catch (e)` only, so the real cause (line/class it came
+      // from) was invisible whenever this generic branch caught something.
+      developer.log('UNEXPECTED ERROR', name: 'FacebookAuth', error: e, stackTrace: stackTrace);
       Get.snackbar("Error", e.toString());
     } finally {
       isLoading.value = false;

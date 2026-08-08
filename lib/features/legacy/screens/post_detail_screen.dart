@@ -7,11 +7,16 @@ import '../../../core/theme/app_color.dart';
 import '../controllers/post_detail_controller.dart';
 
 class PostDetailScreen extends StatelessWidget {
-  const PostDetailScreen({super.key});
+  // FIX: this screen previously took no parameters at all, and
+  // home_screen.dart called Get.to(() => PostDetailScreen()) with nothing
+  // passed — so there was no way to know which deed to show details for.
+  final String deedId;
+
+  const PostDetailScreen({super.key, required this.deedId});
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(PostDetailController());
+    final controller = Get.put(PostDetailController(deedId: deedId));
 
     return Scaffold(
       appBar: AppBar(
@@ -26,18 +31,47 @@ class PostDetailScreen extends StatelessWidget {
         ),
         leading: IconButton(
           onPressed: Get.back,
+          // FIX: was a back-arrow icon — swapped for an explicit close (X)
+          // to exit, as requested.
           icon: Icon(
-            Icons.arrow_back_ios_new_rounded,
+            Icons.close_rounded,
             color: AppColor.lightTextColor,
-            size: 18.sp,
+            size: 22.sp,
           ),
         ),
       ),
       body: SafeArea(
         child: Obx(() {
-          // Show a loading spinner while fetching the deed details
           if (controller.isLoading.value) {
             return const Center(child: CircularProgressIndicator());
+          }
+
+          if (controller.errorMessage.value.isNotEmpty) {
+            return Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 32.w),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.error_outline, color: const Color(0xFFD32F2F), size: 32.sp),
+                    SizedBox(height: 12.h),
+                    Text(
+                      controller.errorMessage.value,
+                      textAlign: TextAlign.center,
+                      style: AppTextTheme.bodyTextStyle.copyWith(
+                        color: AppColor.lightTextColor,
+                        fontSize: 13.sp,
+                      ),
+                    ),
+                    SizedBox(height: 16.h),
+                    TextButton(
+                      onPressed: controller.fetchDeedDetail,
+                      child: const Text('Retry'),
+                    ),
+                  ],
+                ),
+              ),
+            );
           }
 
           return Column(
@@ -56,11 +90,15 @@ class PostDetailScreen extends StatelessWidget {
                         height: 190.h,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(4.r),
+                          color: AppColor.lightSurfaceColor,
                           image: DecorationImage(
-                            // Use API media_url, fallback to placeholder if empty
+                            // FIX: the previous fallback URL
+                            // (img.magnific.com) doesn't resolve to a real
+                            // image host, so the "no media" case rendered
+                            // a broken image instead of a real placeholder.
                             image: controller.mediaUrl.value.isNotEmpty
                                 ? NetworkImage(controller.mediaUrl.value)
-                                : const NetworkImage('https://img.magnific.com/free-photo/teenage-girl-with-praying-peace-hope-dreams-concept_1150-9114.jpg'),
+                                : const NetworkImage('https://placehold.co/600x400?text=No+Image'),
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -70,7 +108,9 @@ class PostDetailScreen extends StatelessWidget {
 
                       // Core Post Text Block Body Field
                       Text(
-                        controller.postContent.value,
+                        controller.postContent.value.isNotEmpty
+                            ? controller.postContent.value
+                            : 'No content for this post yet.',
                         style: AppTextTheme.bodyTextStyle.copyWith(
                           color: AppColor.lightTextColor.withOpacity(0.9),
                           fontSize: 14.sp,
@@ -82,15 +122,16 @@ class PostDetailScreen extends StatelessWidget {
                       SizedBox(height: 20.h),
 
                       // Timestamp Scheduled Context Row Label
-                      Text(
-                        controller.scheduledTimeText.value,
-                        style: AppTextTheme.bodyTextStyle.copyWith(
-                          color: AppColor.lightTextSecondaryColor.withOpacity(0.7),
-                          fontSize: 13.sp,
-                          fontStyle: FontStyle.italic,
-                          fontWeight: FontWeight.w500,
+                      if (controller.scheduledTimeText.value.isNotEmpty)
+                        Text(
+                          controller.scheduledTimeText.value,
+                          style: AppTextTheme.bodyTextStyle.copyWith(
+                            color: AppColor.lightTextSecondaryColor.withOpacity(0.7),
+                            fontSize: 13.sp,
+                            fontStyle: FontStyle.italic,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
-                      ),
 
                       SizedBox(height: 16.h),
 

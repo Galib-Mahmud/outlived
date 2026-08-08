@@ -45,6 +45,7 @@ class ApiEndpoint {
 
   static String deedPause(String id) => "/deeds/$id/pause";
   static String deedResume(String id) => "/deeds/$id/resume";
+  static String deedDetail(String id) => "/deeds/$id";
   static String reminderPause(String id) => "/reminders/$id/pause";
   static String reminderResume(String id) => "/reminders/$id/resume";
 

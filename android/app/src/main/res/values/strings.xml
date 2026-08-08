@@ -1,0 +1,15 @@
+
+<!--    <?xml version="1.0" encoding="utf-8"?>-->
+<resources>
+    <string name="app_name">Outlive</string>
+
+    <!-- ============================================ -->
+    <!-- 🔴 REPLACE THESE 3 WITH YOUR REAL VALUES FROM  -->
+    <!-- developers.facebook.com > Your App > Settings  -->
+    <!-- > Basic                                        -->
+    <!-- ============================================ -->
+    <string name="facebook_app_id">1362427222520385</string> <!-- 🔴 your real App ID -->
+    <string name="facebook_client_token">60576b5ea3753bbf957e000739fd7b9c</string> <!-- 🔴 your real Client Token -->
+    <string name="fb_login_protocol_scheme">fb1362427222520385</string> <!-- 🔴 "fb" + your real App ID -->
+    <!-- ============================================ -->
+</resources>

@@ -175,7 +175,7 @@ class LegacyScreen extends StatelessWidget {
                           InkWell(
                             onTap: () {
                               // Pass the deed ID to the detail screen
-                              Get.to(() => const PostDetailScreen(), arguments: {'deedId': item.id});
+                              Get.to(() => PostDetailScreen(deedId: item.id));
                             },
                             child: Container(
                               margin: EdgeInsets.only(bottom: 16.h),

@@ -17,8 +17,6 @@
 	<key>CFBundleName</key>
 	<string>outlive</string>
 	<key>CFBundlePackageType</key>
-	<key>NSContactsUsageDescription</key>
-    <string>OUTLIVED needs contacts access so you can add people to receive your reminders and deeds.</string>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
 	<string>$(FLUTTER_BUILD_NAME)</string>
@@ -28,6 +26,8 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSContactsUsageDescription</key>
+	<string>OUTLIVED needs contacts access so you can add people to receive your reminders and deeds.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
@@ -67,6 +67,40 @@
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+
+	<!-- ============================================ -->
+	<!-- 🔴 REPLACE THE 3 VALUES BELOW WITH YOUR REAL   -->
+	<!-- Facebook App ID / Client Token from:           -->
+	<!-- developers.facebook.com > Your App > Settings  -->
+	<!-- > Basic                                        -->
+	<!-- ============================================ -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>fb1362427222520385</string> <!-- 🔴 "fb" + your real App ID, no spaces -->
+			</array>
+		</dict>
+	</array>
+
+	<key>FacebookAppID</key>
+	<string>1362427222520385</string> <!-- 🔴 your real App ID -->
+
+	<key>FacebookClientToken</key>
+	<string>60576b5ea3753bbf957e000739fd7b9c</string> <!-- 🔴 your real Client Token -->
+
+	<key>FacebookDisplayName</key>
+	<string>Outlive</string> <!-- your app's display name shown on the FB login dialog -->
+	<!-- ============================================ -->
+
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>fbapi</string>
+		<string>fb-messenger-share-api</string>
+		<string>fbauth2</string>
+		<string>fbshareextension</string>
 	</array>
 </dict>
 </plist>

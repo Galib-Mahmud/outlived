@@ -324,7 +324,7 @@ class HomeScreen extends StatelessWidget {
                       itemBuilder: (context, index) {
                         final deed = controller.goodDeedPosts[index];
                         return InkWell(
-                          onTap: () => Get.to(() => PostDetailScreen()),
+                          onTap: () => Get.to(() => PostDetailScreen(deedId: deed.id)),
                           child: Container(
                             width: double.infinity,
                             padding: EdgeInsets.all(14.r),

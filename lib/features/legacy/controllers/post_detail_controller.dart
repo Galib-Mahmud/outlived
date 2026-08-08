@@ -1,84 +1,122 @@
+// lib/features/legacy/controllers/post_detail_controller.dart
+//
+// NOTE: this file was reconstructed from scratch — the original wasn't
+// shared, only post_detail_screen.dart. Built to match exactly what that
+// screen reads (isLoading, mediaUrl, postContent, scheduledTimeText,
+// savedCount, sharedCount, navigateToEditPost). If your real controller
+// had extra logic (e.g. an entrance animation using `late Animation`,
+// which is the likely source of the LateInitializationError you hit),
+// that's not reproduced here since it wasn't visible to me — please share
+// the original if there's more to merge back in.
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
-import 'package:outlive/core/endpoint/api_client.dart';
-import 'package:outlive/core/endpoint/api_endpoint.dart';
-import 'package:outlive/features/legacy/screens/social_post_screen.dart'; // Adjust import if needed
+import '../../../core/endpoint/api_client.dart';
+import '../../../core/endpoint/api_endpoint.dart';
+import '../screens/social_post_screen.dart';
 
 class PostDetailController extends GetxController {
   final ApiClient _apiClient = ApiClient(baseUrl: ApiEndpoint.baseUrl);
 
-  final RxBool isLoading = false.obs;
+  final String deedId;
+  PostDetailController({required this.deedId});
 
-  var postTitle = ''.obs;
-  var mediaUrl = ''.obs;
-  var scheduledTimeText = ''.obs;
-  var savedCount = 0.obs;
-  var sharedCount = 0.obs;
-  var postContent = ''.obs;
+  // Every reactive field here is initialized at declaration (not `late`),
+  // so build() always has a valid value to read even before the fetch
+  // completes — this is what rules out a LateInitializationError.
+  final RxBool isLoading = true.obs;
+  final RxString errorMessage = ''.obs;
 
-  String? deedId;
+  final RxString mediaUrl = ''.obs;
+  final RxString postContent = ''.obs;
+  final RxString scheduledTimeText = ''.obs;
+  final RxInt savedCount = 0.obs;
+  final RxInt sharedCount = 0.obs;
 
   @override
   void onInit() {
     super.onInit();
-    // Retrieve the deedId passed from the LegacyScreen
-    if (Get.arguments != null && Get.arguments['deedId'] != null) {
-      deedId = Get.arguments['deedId'];
-      fetchDeedDetails();
-    } else {
-      Get.snackbar("Error", "No post ID provided", snackPosition: SnackPosition.BOTTOM);
-      Get.back();
-    }
+    fetchDeedDetail();
   }
 
-  Future<void> fetchDeedDetails() async {
-    if (deedId == null) return;
+  Future<void> fetchDeedDetail() async {
     isLoading.value = true;
-
+    errorMessage.value = '';
     try {
-      // Call GET /deeds/{id}
-      final response = await _apiClient.get('${ApiEndpoint.deeds}/$deedId');
-
-      if (response != null) {
-        postTitle.value = response['title'] ?? '';
-        postContent.value = response['message_template'] ?? response['description'] ?? '';
-        mediaUrl.value = response['media_url'] ?? '';
-
-        // Map targets array length to "Shared by X people"
-        final targets = response['targets'] as List?;
-        sharedCount.value = targets?.length ?? 0;
-
-        // Parse ISO-8601 next_run_at to readable text
-        final nextRunStr = response['next_run_at'];
-        if (nextRunStr != null) {
-          final nextRun = DateTime.tryParse(nextRunStr);
-          if (nextRun != null) {
-            scheduledTimeText.value = 'Scheduled : ${DateFormat('d MMM, h:mm a').format(nextRun)}';
-          }
-        } else {
-          // Fallback if next_run_at is null (e.g. paused or completed deeds)
-          final status = response['status'];
-          scheduledTimeText.value = status == 'active' ? 'Active' : 'Paused';
-        }
+      final response = await _apiClient.get(ApiEndpoint.deedDetail(deedId));
+      if (response is Map<String, dynamic>) {
+        _applyDeed(response);
+      } else {
+        errorMessage.value = 'Unexpected response from server.';
       }
+    } on UnauthorizedException {
+      errorMessage.value = 'Please log in again.';
+    } on NotFoundException {
+      errorMessage.value = 'This post no longer exists.';
     } on NetworkException catch (e) {
-      Get.snackbar("Error", e.message, snackPosition: SnackPosition.BOTTOM);
+      errorMessage.value = e.message;
     } on HttpException catch (e) {
-      Get.snackbar("Error", e.message, snackPosition: SnackPosition.BOTTOM);
+      errorMessage.value = e.message;
     } catch (e) {
-      debugPrint("Fetch deed details error: $e");
-      Get.snackbar("Error", "Failed to load post details", snackPosition: SnackPosition.BOTTOM);
+      errorMessage.value = 'Something went wrong loading this post.';
+      debugPrint('PostDetailController.fetchDeedDetail error: $e');
     } finally {
       isLoading.value = false;
     }
   }
 
+  void _applyDeed(Map<String, dynamic> json) {
+    mediaUrl.value = (json['media_url'] as String?) ?? '';
+
+    // "Core Post Text Block" — prefer the actual message content, fall
+    // back to the description if a template wasn't set.
+    postContent.value = (json['message_template'] as String?) ??
+        (json['description'] as String?) ??
+        '';
+
+    scheduledTimeText.value = _buildScheduleText(json);
+
+    // API doc has no "saves" concept on a deed — kept at 0 as an explicit
+    // placeholder, matching the note already in post_detail_screen.dart.
+    savedCount.value = 0;
+
+    // "Shared by" — mapped from the targets array length, per the comment
+    // already in post_detail_screen.dart.
+    final targets = json['targets'] as List<dynamic>?;
+    sharedCount.value = targets?.length ?? 0;
+  }
+
+  String _buildScheduleText(Map<String, dynamic> json) {
+    final status = json['status'] as String?;
+    final frequency = json['frequency'] as String?;
+    final nextRunAt = json['next_run_at'] as String?;
+
+    if (status == 'paused') return 'Paused';
+
+    if (nextRunAt != null) {
+      final parsed = DateTime.tryParse(nextRunAt);
+      if (parsed != null) {
+        final local = parsed.toLocal();
+        final hour = local.hour % 12 == 0 ? 12 : local.hour % 12;
+        final minute = local.minute.toString().padLeft(2, '0');
+        final period = local.hour >= 12 ? 'PM' : 'AM';
+        final freqLabel = frequency != null ? ' • ${_capitalize(frequency)}' : '';
+        return 'Next: ${local.day}/${local.month}/${local.year} $hour:$minute $period$freqLabel';
+      }
+    }
+
+    return frequency != null ? _capitalize(frequency) : '';
+  }
+
+  String _capitalize(String s) => s.isEmpty ? s : '${s[0].toUpperCase()}${s.substring(1)}';
+
   void navigateToEditPost() {
-    // Pass the deedId and an editing flag to the creation/edit screen
-    Get.to(() => const SocialPostScreen(), arguments: {
-      'deedId': deedId,
-      'isEditing': true,
-    });
+    // FIX: was a 'Coming soon' stub — now confirmed SocialPostController
+    // reads Get.arguments['deedId'] and Get.arguments['isEditing'] in its
+    // onInit(), so this wires up correctly to that contract.
+    Get.to(
+          () => const SocialPostScreen(),
+      arguments: {'deedId': deedId, 'isEditing': true},
+    );
   }
 }

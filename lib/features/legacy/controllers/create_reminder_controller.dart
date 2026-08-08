@@ -6,15 +6,11 @@ import 'package:outlive/core/endpoint/api_endpoint.dart';
 
 class CreateReminderController extends GetxController {
   final ApiClient _apiClient = ApiClient(baseUrl: ApiEndpoint.baseUrl);
-
   final messageController = TextEditingController();
   final benefitCircleController = TextEditingController();
 
-  // Date and Time tracking state variables
   var selectedDateText = 'DD/MM/YY'.obs;
   var selectedTimeText = 'hh:mm'.obs;
-
-  // Store actual DateTime objects for API formatting
   DateTime? _pickedDate;
   TimeOfDay? _pickedTime;
 
@@ -48,7 +44,6 @@ class CreateReminderController extends GetxController {
   }
 
   Future<void> saveReminder() async {
-    // 1. Validation
     if (benefitCircleController.text.trim().isEmpty) {
       Get.snackbar("Error", "Please enter a title / benefit circle", snackPosition: SnackPosition.BOTTOM);
       return;
@@ -64,32 +59,45 @@ class CreateReminderController extends GetxController {
 
     isLoading.value = true;
     try {
-      // 2. Map UI Interval to API Frequency
+      // KNOWN GAP — not fixed here, needs a product decision:
+      // POST /reminders (per the API doc, §9) has no field for targeting
+      // specific contacts at all — no contact_ids, nothing. That concept
+      // only exists on /deeds. So whatever contacts get picked via the
+      // "Benefit Circle" contact selector are used below only as a text
+      // label for the title — they will NOT actually receive this
+      // reminder through any documented mechanism. This screen may need
+      // to create a Deed instead, or contact-targeting needs to be added
+      // to /reminders, or contact selection should be dropped from this
+      // screen if reminders are meant to be purely personal.
       String frequency = 'daily';
-      if (selectedRewardInterval.value == 'Weekly' || selectedRewardInterval.value == 'Fridays') {
+      if (selectedRewardInterval.value == 'Weekly') {
         frequency = 'weekly';
       } else if (selectedRewardInterval.value == 'Monthly') {
         frequency = 'monthly';
+      } else if (selectedRewardInterval.value == 'Fridays') {
+        // KNOWN GAP — not fixed here: unlike /deeds, /reminders has no
+        // cron_expression field documented at all, so there is genuinely
+        // no correct way to represent "every Friday" through this
+        // endpoint as specified. Falling back to generic 'weekly' loses
+        // which day — confirm with backend whether reminders secretly
+        // also accept cron_expression, or whether this option should be
+        // removed from the reminder-creation UI entirely.
+        frequency = 'weekly';
       }
 
-      // 3. Format time_of_day as HH:mm:ss (Required by API)
       final timeOfDay = "${_pickedTime!.hour.toString().padLeft(2, '0')}:${_pickedTime!.minute.toString().padLeft(2, '0')}:00";
 
-      // 4. Build Payload
       final payload = {
         "title": benefitCircleController.text.trim(),
         "body": messageController.text.trim(),
-        "category": "custom", // Defaulting to custom based on API docs
+        "category": "custom",
         "frequency": frequency,
         "time_of_day": timeOfDay,
       };
 
-      // 5. API Call
       await _apiClient.post(ApiEndpoint.reminders, body: payload);
-
       Get.snackbar("Success", "Reminder created successfully!", snackPosition: SnackPosition.BOTTOM);
-      Get.back(); // Return to previous screen
-
+      Get.back();
     } on NetworkException catch (e) {
       Get.snackbar("Error", e.message, snackPosition: SnackPosition.BOTTOM);
     } on HttpException catch (e) {
