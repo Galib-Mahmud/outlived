@@ -9,7 +9,7 @@ import '../theme/text_theme.dart';
 class RoundActionBtn extends StatelessWidget {
   Color fillColor;
   Color textColor;
-  void Function() onPressed;
+  void Function()?onPressed;
   String text;
   bool isOutlined;
   RoundActionBtn({

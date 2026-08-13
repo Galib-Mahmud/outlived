@@ -81,8 +81,8 @@ class ProfileUpdateController extends GetxController {
         },
       );
 
-      Get.snackbar("Success", "Profile updated successfully!", snackPosition: SnackPosition.BOTTOM);
       Get.back();
+      Get.snackbar("Success", "Profile updated successfully!", snackPosition: SnackPosition.BOTTOM);
     } on HttpException catch (e) {
       // FIX: was a generic catch(e) that always showed the same message
       // regardless of cause — your API doc specifically calls out avatar

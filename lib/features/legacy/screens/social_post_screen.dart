@@ -398,6 +398,7 @@ class _AiGeneratedTab extends StatelessWidget {
           Obx(() => Column(
             children: controller.aiGenerationTypes.map((type) {
               final isSelected = controller.selectedAiType.value == type;
+              final isImageMode = type == 'Image Only' || type == 'Text + Image' || type == 'Text + Video';
               return Padding(
                 padding: EdgeInsets.only(bottom: 12.h),
                 child: GestureDetector(
@@ -413,13 +414,23 @@ class _AiGeneratedTab extends StatelessWidget {
                         width: 1.5,
                       ),
                     ),
-                    child: Text(
-                      type,
-                      style: AppTextTheme.bodyTextStyle.copyWith(
-                        color: AppColor.lightTextColor,
-                        fontSize: 14.sp,
-                        fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
-                      ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          type,
+                          style: AppTextTheme.bodyTextStyle.copyWith(
+                            color: isImageMode ? AppColor.lightTextTertiaryColor : AppColor.lightTextColor,
+                            fontSize: 14.sp,
+                            fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
+                          ),
+                        ),
+                        // Confirmed staff-only (403 for app users) — shown
+                        // as locked rather than removed, since it's still
+                        // part of the requested design.
+                        if (isImageMode)
+                          Icon(Icons.lock_outline_rounded, size: 14.sp, color: AppColor.lightTextTertiaryColor),
+                      ],
                     ),
                   ),
                 ),
@@ -447,8 +458,12 @@ class _AiGeneratedTab extends StatelessWidget {
                 dropdownColor: AppColor.lightSurfaceColor,
                 icon: Icon(Icons.arrow_drop_down_rounded, color: AppColor.lightTextTertiaryColor, size: 24.sp),
                 style: AppTextTheme.bodyTextStyle.copyWith(color: AppColor.lightTextColor, fontSize: 14.sp),
-                items: controller.categories
-                    .map((val) => DropdownMenuItem<String>(value: val, child: Text(val)))
+                // FIX: was reusing controller.categories (Islamic/General/
+                // Reminders) — an unrelated list used by the Custom Post
+                // tab's own category field. AI generation has its own real
+                // 13-category set confirmed by the backend team.
+                items: SocialPostController.aiCategories
+                    .map((c) => DropdownMenuItem<String>(value: c['value'], child: Text(c['label']!)))
                     .toList(),
                 onChanged: (val) => controller.aiSelectedCategory.value = val,
               ),

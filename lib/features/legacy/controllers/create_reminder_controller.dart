@@ -96,8 +96,14 @@ class CreateReminderController extends GetxController {
       };
 
       await _apiClient.post(ApiEndpoint.reminders, body: payload);
-      Get.snackbar("Success", "Reminder created successfully!", snackPosition: SnackPosition.BOTTOM);
+
+      // FIX: was Get.snackbar(...) immediately followed by Get.back() —
+      // the pop transition frequently cut the snackbar off before it
+      // rendered. Popping first, then showing the message (GetX's
+      // snackbar is a global overlay, not tied to the route being
+      // closed, so it still displays correctly after navigating back).
       Get.back();
+      Get.snackbar("Success", "Reminder created successfully!", snackPosition: SnackPosition.BOTTOM);
     } on NetworkException catch (e) {
       Get.snackbar("Error", e.message, snackPosition: SnackPosition.BOTTOM);
     } on HttpException catch (e) {

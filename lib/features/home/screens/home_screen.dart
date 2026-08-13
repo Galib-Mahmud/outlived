@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:outlive/core/theme/app_color.dart';
 import 'package:outlive/features/legacy/screens/post_detail_screen.dart';
 import '../../../core/theme/text_theme.dart';
+import '../../landing/controllers/bottom_nav_controller.dart';
 import '../controllers/home_controller.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -280,15 +281,38 @@ class HomeScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     label('Good Deed Posts'),
-                    GestureDetector(
-                      onTap: controller.handleCreateNewDeed,
-                      child: Text(
-                        'Create Now',
-                        style: TextStyle(
-                          fontSize: 12.sp,
-                          color: AppColor.secondaryColor,
+                    Row(
+                      children: [
+                        GestureDetector(
+                          // New: navigates to the Legacy tab (which already
+                          // lists every deed) rather than pushing a
+                          // duplicate screen on top of the bottom-nav shell.
+                          // Assumes BottomNavController is already
+                          // registered via Get.put() somewhere above this
+                          // in the tree (the standard shell pattern) — if
+                          // it isn't, Get.find() here will throw.
+                          onTap: () => Get.find<BottomNavController>().changeTab(1),
+                          child: Text(
+                            'View All',
+                            style: TextStyle(
+                              fontSize: 12.sp,
+                              color: AppColor.secondaryColor,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                         ),
-                      ),
+                        SizedBox(width: 12.w),
+                        GestureDetector(
+                          onTap: controller.handleCreateNewDeed,
+                          child: Text(
+                            'Create Now',
+                            style: TextStyle(
+                              fontSize: 12.sp,
+                              color: AppColor.secondaryColor,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -299,7 +323,7 @@ class HomeScreen extends StatelessWidget {
                 Obx(() {
                   if (controller.isLoading.value && controller.goodDeedPosts.isEmpty) {
                     return SizedBox(
-                      height: 155.h,
+                      height: 175.h,
                       child: const Center(child: CircularProgressIndicator()),
                     );
                   }
@@ -315,18 +339,35 @@ class HomeScreen extends StatelessWidget {
                     );
                   }
                   return SizedBox(
-                    height: 155.h,
-                    child: ListView.builder(
+                    // FIX: bumped from 155.h to 175.h to give the card's
+                    // text more breathing room now that it's properly
+                    // horizontal instead of clipped.
+                    height: 175.h,
+                    child: ListView.separated(
+                      // FIX: this was missing entirely — the comment above
+                      // said "Horizontal Good Deed List Row Block" but
+                      // without scrollDirection, ListView defaults to
+                      // vertical. Combined with each card being
+                      // width: double.infinity, cards stacked on top of
+                      // each other and got clipped inside the fixed-height
+                      // box — only a sliver of the first card was ever
+                      // visible. This is almost certainly the "cramped,
+                      // text not spread out" issue.
+                      scrollDirection: Axis.horizontal,
                       physics: const BouncingScrollPhysics(),
-                      // FIX: was hardcoded to 1, so only the first deed ever
-                      // rendered no matter how many came back.
                       itemCount: controller.goodDeedPosts.length,
+                      separatorBuilder: (context, index) => SizedBox(width: 12.w),
                       itemBuilder: (context, index) {
                         final deed = controller.goodDeedPosts[index];
                         return InkWell(
                           onTap: () => Get.to(() => PostDetailScreen(deedId: deed.id)),
                           child: Container(
-                            width: double.infinity,
+                            // FIX: was width: double.infinity, which is
+                            // invalid/meaningless inside a horizontal
+                            // ListView (unbounded width constraint) — now
+                            // a real fixed width so cards actually "spread"
+                            // out properly side by side.
+                            width: 240.w,
                             padding: EdgeInsets.all(14.r),
                             decoration: BoxDecoration(
                               color: AppColor.lightSurfaceColor,

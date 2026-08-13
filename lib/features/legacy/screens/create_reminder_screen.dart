@@ -5,6 +5,7 @@ import 'package:outlive/core/theme/text_theme.dart';
 import 'package:outlive/core/universal_widgets/round_action_btn.dart';
 import 'package:outlive/features/contacts/screens/contact_selection_screen.dart';
 import '../../../core/theme/app_color.dart';
+import '../../contacts/controllers/contact_controller.dart';
 import '../controllers/create_reminder_controller.dart';
 
 class CreateReminderScreen extends StatelessWidget {
@@ -72,7 +73,6 @@ class CreateReminderScreen extends StatelessWidget {
 
                     SizedBox(height: 24.h),
 
-                    // Field 1: Message Textarea Frame
                     _buildFieldLabel('Message'),
                     SizedBox(height: 8.h),
                     TextFormField(
@@ -84,7 +84,6 @@ class CreateReminderScreen extends StatelessWidget {
 
                     SizedBox(height: 20.h),
 
-                    // Field 2: Benefit Circle Address Entry
                     _buildFieldLabel('Benefit Circle'),
                     SizedBox(height: 8.h),
                     TextFormField(
@@ -95,7 +94,6 @@ class CreateReminderScreen extends StatelessWidget {
 
                     SizedBox(height: 20.h),
 
-                    // Field 3: Side-by-side Date & Time Grid Elements
                     Row(
                       children: [
                         Expanded(
@@ -132,7 +130,6 @@ class CreateReminderScreen extends StatelessWidget {
 
                     SizedBox(height: 24.h),
 
-                    // Field 4: Continue Reward Multiple Segments Row
                     _buildFieldLabel('Continue Reward'),
                     SizedBox(height: 8.h),
                     Container(
@@ -159,12 +156,29 @@ class CreateReminderScreen extends StatelessWidget {
               ),
             ),
 
-            // Save Button with Loading State
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
-              child: Obx(() => RoundActionBtn(
-                onPressed: controller.saveReminder,
-                text: controller.isLoading.value ? 'Saving...' : 'Save Reminder',
+              child: Obx(() => Stack(
+                alignment: Alignment.center,
+                children: [
+                  RoundActionBtn(
+                    // FIX: was always `controller.saveReminder` regardless
+                    // of isLoading — the button never actually disabled,
+                    // so a slow network let someone tap it multiple times
+                    // and fire concurrent requests.
+                    onPressed: controller.isLoading.value ? null : controller.saveReminder,
+                    text: controller.isLoading.value ? 'Saving...' : 'Save Reminder',
+                  ),
+                  if (controller.isLoading.value)
+                    Positioned(
+                      right: 20.w,
+                      child: SizedBox(
+                        width: 16.w,
+                        height: 16.w,
+                        child: const CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                      ),
+                    ),
+                ],
               )),
             )
           ],
@@ -172,8 +186,6 @@ class CreateReminderScreen extends StatelessWidget {
       ),
     );
   }
-
-  // --- Core Layout Helpers Component Modules ---
 
   Widget _buildFieldLabel(String label) {
     return Text(
@@ -200,8 +212,13 @@ class CreateReminderScreen extends StatelessWidget {
         onTap: () async {
           // Wait for the contact selection screen to return a result
           final result = await Get.to(() => const ContactSelectionScreen());
-          if (result != null && result is String) {
-            controller.benefitCircleController.text = result;
+          // FIX: ContactSelectionScreen's Confirm button returns
+          // List<ContactModel> (Get.back(result: selectedContacts.toList())),
+          // never a String — so `result is String` was always false and
+          // this field never actually got filled in after selecting contacts.
+          if (result != null && result is List<ContactModel>) {
+            controller.benefitCircleController.text =
+                result.map((c) => c.name).join(', ');
           }
         },
         child: Padding(

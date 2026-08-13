@@ -42,11 +42,9 @@ class SocialPostController extends GetxController {
   String? deedId;
 
   // ─── AI GENERATION STATE ────────────────────────────────────
-  // Matches the 5 options shown in the design. Only 'Text Only' is backed
-  // by the real API (POST /ai/generate has no `type` field and its
-  // response is text-only — no image/video generation exists server-side
-  // per the doc). The other four render identically in the UI but show a
-  // clear "not available" message on Generate rather than faking output.
+  // Confirmed against the backend team's actual spec (not just the
+  // general API doc) — this is the real request/response shape for
+  // POST /ai/generate as available to regular app users.
   final List<String> aiGenerationTypes = const [
     'Text Only',
     'Image Only',
@@ -55,8 +53,36 @@ class SocialPostController extends GetxController {
     "Qur'an & Hadith Only",
   ];
   final RxString selectedAiType = 'Text Only'.obs;
+
+  // Confirmed 13-category curated list. `value` is what's actually sent
+  // to the API; `label` is display-only. category is technically
+  // free-text/unvalidated server-side, but these are the recommended set.
+  static const List<Map<String, String>> aiCategories = [
+    {'value': 'islamic', 'label': 'General'},
+    {'value': 'charity', 'label': 'Charity / Sadaqah'},
+    {'value': 'prayer', 'label': 'Prayer / Salah'},
+    {'value': 'gratitude', 'label': 'Gratitude'},
+    {'value': 'patience', 'label': 'Patience'},
+    {'value': 'forgiveness', 'label': 'Forgiveness'},
+    {'value': 'kindness', 'label': 'Kindness'},
+    {'value': 'family', 'label': 'Family & Parents'},
+    {'value': 'knowledge', 'label': 'Seeking Knowledge'},
+    {'value': 'dhikr', 'label': 'Remembrance (Dhikr)'},
+    {'value': 'repentance', 'label': 'Repentance'},
+    {'value': 'ramadan', 'label': 'Ramadan'},
+    {'value': 'hereafter', 'label': 'The Hereafter'},
+  ];
+  // Categories confirmed to have seeded verified Qur'an/Hadith citations —
+  // used to gate the "Qur'an & Hadith Only" option, since it isn't a real
+  // API parameter and can only be approximated by category choice.
+  static const Set<String> _scriptureSeededCategories = {'charity', 'prayer', 'gratitude', 'islamic'};
+
   final RxnString aiSelectedCategory = RxnString();
   final aiTopicController = TextEditingController();
+  // No UI control for these two yet (not in the design) — sent at the
+  // documented defaults. Add controls here if you want them exposed.
+  final String _aiTone = 'warm';
+  final int _aiMaxLength = 280;
   final RxBool isGenerating = false.obs;
   final RxList<String> generatedPosts = <String>[].obs;
 
@@ -156,16 +182,35 @@ class SocialPostController extends GetxController {
 
   // ─── AI GENERATION ───────────────────────────────────────────
   Future<void> generateAiPost() async {
-    if (selectedAiType.value != 'Text Only') {
+    if (selectedAiType.value == 'Image Only' ||
+        selectedAiType.value == 'Text + Image' ||
+        selectedAiType.value == 'Text + Video') {
+      // Confirmed, not speculative: image/poster modes live on a
+      // staff-only dashboard endpoint (/admin/content-test). A regular
+      // app user gets a 403 there — there's no way to make this work for
+      // this app without a separate user-facing endpoint being built.
       Get.snackbar(
-        "Not available yet",
-        "${selectedAiType.value} generation isn't supported by the API yet — only Text Only works right now.",
+        "Not available for app users",
+        "Image/poster generation is staff-only right now and isn't accessible from the app.",
         snackPosition: SnackPosition.BOTTOM,
       );
       return;
     }
     if (aiSelectedCategory.value == null) {
       Get.snackbar("Error", "Please select a category", snackPosition: SnackPosition.BOTTOM);
+      return;
+    }
+    if (selectedAiType.value == "Qur'an & Hadith Only" &&
+        !_scriptureSeededCategories.contains(aiSelectedCategory.value)) {
+      // Not a real API parameter — citations only get auto-attached for
+      // these four categories, never forced. Guide the person toward a
+      // category where it's actually possible rather than silently
+      // generating unrelated content.
+      Get.snackbar(
+        "Pick a different category",
+        "Verified Qur'an/Hadith citations are currently only available for Charity, Prayer, Gratitude, or General — pick one of those for this option.",
+        snackPosition: SnackPosition.BOTTOM,
+      );
       return;
     }
 
@@ -176,12 +221,11 @@ class SocialPostController extends GetxController {
         ApiEndpoint.aiGenerate,
         body: {
           "category": aiSelectedCategory.value,
-          "topic": aiTopicController.text.trim().isEmpty ? null : aiTopicController.text.trim(),
-          // ASSUMPTION: the design has no field for this — doc requires it,
-          // so defaulting to 3 (matching the doc's own example) until/unless
-          // a count control is added to the UI.
+          if (aiTopicController.text.trim().isNotEmpty) "topic": aiTopicController.text.trim(),
+          "tone": _aiTone,
+          if (selectedPlatform.value.isNotEmpty) "platform": selectedPlatform.value.toLowerCase(),
           "count": 3,
-          "platform": selectedPlatform.value.toLowerCase(),
+          "max_length": _aiMaxLength,
         },
       );
 
@@ -190,6 +234,12 @@ class SocialPostController extends GetxController {
         generatedPosts.assignAll(posts);
         if (posts.isEmpty) {
           Get.snackbar("Notice", "No posts were generated. Try a different topic.", snackPosition: SnackPosition.BOTTOM);
+        } else if (selectedAiType.value == "Qur'an & Hadith Only") {
+          Get.snackbar(
+            "Note",
+            "A verified citation is included only when available — not guaranteed for every result.",
+            snackPosition: SnackPosition.BOTTOM,
+          );
         }
       }
     } on ServerException {
@@ -255,13 +305,13 @@ class SocialPostController extends GetxController {
 
       if (isEditing.value && deedId != null) {
         await _apiClient.patch(ApiEndpoint.deedDetail(deedId!), body: payload);
+        Get.back();
         Get.snackbar("Success", "Post updated successfully!", snackPosition: SnackPosition.BOTTOM);
       } else {
         await _apiClient.post(ApiEndpoint.deeds, body: payload);
+        Get.back();
         Get.snackbar("Success", "Post created successfully!", snackPosition: SnackPosition.BOTTOM);
       }
-
-      Get.back();
     } on NetworkException catch (e) {
       Get.snackbar("Error", e.message, snackPosition: SnackPosition.BOTTOM);
     } on HttpException catch (e) {
