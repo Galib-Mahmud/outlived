@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.outlive"
+    namespace = "com.mustafa.outliveai1"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
