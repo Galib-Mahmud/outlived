@@ -1,4 +1,4 @@
-package com.example.outlive
+package ai.outlived.app
 
 import android.content.pm.PackageManager
 import android.util.Base64
